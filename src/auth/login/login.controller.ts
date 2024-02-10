@@ -2,10 +2,10 @@ import { Body, Controller, Get, Post, Req, Res } from '@nestjs/common'
 import { LoginService } from './login.service'
 import * as JWT from 'jsonwebtoken'
 import { Request, Response } from 'express'
-import { ErrorMessage, SuccessMessage } from '../../types/Messages'
 import { UserPublicData } from '../../types/user'
 import getUserWithJwt from '../../getUsers/getUserWithJwt'
 import { GetUserWithCredentialsErrorMessages, LoginRequestBody } from '../../types/login'
+import { ErrorMessage, SuccessMessage } from '../../types/Messages'
 
 @Controller('/login')
 export class LoginController {

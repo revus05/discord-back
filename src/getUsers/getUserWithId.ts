@@ -1,7 +1,7 @@
 import { User } from '@prisma/client'
-import { ErrorMessage, SuccessMessage } from '../types/Messages'
 import { GetUserWithIdErrorMessages, UserPublicData } from '../types/user'
 import prisma from '../../prisma/client'
+import { ErrorMessage, SuccessMessage } from '../types/Messages'
 
 export type GetUserWithIdResponse =
 	| SuccessMessage<'Successfully got user', { user: UserPublicData }>

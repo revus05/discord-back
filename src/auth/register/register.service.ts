@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common'
 import { Prisma, User } from '@prisma/client'
 import prisma from '../../../prisma/client'
-import { ErrorMessage, SuccessMessage } from '../../types/Messages'
 import { RegisterRequestBody, RegisterUserErrorMessages } from '../../types/register'
+import { ErrorMessage, SuccessMessage } from '../../types/Messages'
 
 export type RegisterResponse =
 	| SuccessMessage<'Registration completed', undefined>

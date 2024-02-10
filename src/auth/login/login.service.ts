@@ -2,9 +2,9 @@ import { Injectable } from '@nestjs/common'
 import { User } from '@prisma/client'
 import * as bcrypt from 'bcryptjs'
 import prisma from '../../../prisma/client'
-import { ErrorMessage, SuccessMessage } from '../../types/Messages'
 import { UserPublicData } from '../../types/user'
 import { GetUserWithCredentialsErrorMessages, LoginRequestBody } from '../../types/login'
+import { ErrorMessage, SuccessMessage } from '../../types/Messages'
 
 type GetUserWithCredentials =
 	| SuccessMessage<'Authorized', { user: UserPublicData }>
