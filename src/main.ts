@@ -7,7 +7,7 @@ async function bootstrap() {
 	const app = await NestFactory.create<NestExpressApplication>(AppModule)
 	app.enableCors({
 		credentials: true,
-		origin: 'http://localhost:6173',
+		origin: 'http://localhost:5173',
 	})
 	const staticDirectory = `${process.cwd()}/src/public/`
 	app.useStaticAssets(staticDirectory)
