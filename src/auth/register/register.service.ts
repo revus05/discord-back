@@ -11,6 +11,25 @@ export type RegisterResponse =
 @Injectable()
 export class RegisterService {
 	async register(requestBody: RegisterRequestBody): Promise<RegisterResponse> {
+		const random = Math.floor(Math.random() * 3)
+		let color = ''
+		switch (random) {
+			case 1:
+				color = 'orange'
+				break
+			case 2:
+				color = 'red'
+				break
+			case 3:
+				color = 'green'
+				break
+			case 4:
+				color = 'blue'
+				break
+			case 5:
+				color = 'yellow'
+				break
+		}
 		try {
 			const user: User = await prisma.user.create({
 				data: {
@@ -22,6 +41,7 @@ export class RegisterService {
 					birthdayYear: requestBody.birthdayYear,
 					userImage: requestBody.userImage,
 					password: requestBody.password,
+					color,
 				},
 			})
 			if (user) {

@@ -18,6 +18,7 @@ model User {
   userImage     String?
   password      String
   groups        UserGroup[]
+  color         String      @default("blue")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

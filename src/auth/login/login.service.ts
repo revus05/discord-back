@@ -40,6 +40,7 @@ export class LoginService {
 							birthdayMonth: user.birthdayMonth,
 							birthdayYear: user.birthdayYear,
 							userImage: user.userImage,
+							color: user.color,
 							createdAt: user.createdAt,
 							updatedAt: user.updatedAt,
 						},

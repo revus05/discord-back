@@ -33,6 +33,7 @@ const getUserWithId = async (id: number): Promise<GetUserWithIdResponse> => {
 					birthdayMonth: user.birthdayMonth,
 					birthdayYear: user.birthdayYear,
 					userImage: user.userImage,
+					color: user.color,
 					createdAt: user.createdAt,
 					updatedAt: user.updatedAt,
 				},
