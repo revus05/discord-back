@@ -18,7 +18,9 @@ model User {
   userImage     String?
   password      String
   groups        UserGroup[]
-  color         String      @default("blue")
+  color         String
+  textStatus    String
+  onlineStatus  String
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

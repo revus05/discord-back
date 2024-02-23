@@ -2,9 +2,9 @@ export type RegisterRequestBody = {
 	email: string
 	showname: string
 	username: string
-	birthdayYear: number
+	birthdayYear: string
 	birthdayMonth: string
-	birthdayDay: number
+	birthdayDay: string
 	userImage: string | null
 	password: string
 }

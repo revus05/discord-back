@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "User" ALTER COLUMN "onlineStatus" DROP DEFAULT,
+ALTER COLUMN "textStatus" DROP DEFAULT;

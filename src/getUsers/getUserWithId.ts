@@ -34,6 +34,8 @@ const getUserWithId = async (id: number): Promise<GetUserWithIdResponse> => {
 					birthdayYear: user.birthdayYear,
 					userImage: user.userImage,
 					color: user.color,
+					textStatus: user.textStatus,
+					onlineStatus: user.onlineStatus,
 					createdAt: user.createdAt,
 					updatedAt: user.updatedAt,
 				},
