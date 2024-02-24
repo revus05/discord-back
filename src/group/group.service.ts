@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common'
 import prisma from '../../prisma/client'
-import { Group, User, UserGroup } from '@prisma/client'
+import { Group, NoImageColors, User, UserGroup } from '@prisma/client'
 import { ErrorMessage, SuccessMessage } from '../types/Messages'
 
 type GetGroups = SuccessMessage<'Successfully got groups', { groups: Group[] }> | ErrorMessage<'Unauthorized'>
@@ -61,23 +61,23 @@ export class GroupService {
 	}
 
 	async createGroup(id: number): Promise<CreateGroupResponse> {
-		const random = Math.floor(Math.random() * 3)
-		let color = ''
+		const random = Math.floor(Math.random() * 5)
+		let color: NoImageColors
 		switch (random) {
 			case 1:
-				color = 'orange'
+				color = NoImageColors.orange
 				break
 			case 2:
-				color = 'red'
+				color = NoImageColors.red
 				break
 			case 3:
-				color = 'green'
+				color = NoImageColors.green
 				break
 			case 4:
-				color = 'blue'
+				color = NoImageColors.blue
 				break
 			case 5:
-				color = 'yellow'
+				color = NoImageColors.yellow
 				break
 		}
 		try {

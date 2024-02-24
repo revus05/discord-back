@@ -8,29 +8,31 @@ datasource db {
 }
 
 model User {
-  id            Int         @id @default(autoincrement())
-  email         String      @unique
-  username      String      @unique
-  showname      String
-  birthdayDay   Int
-  birthdayMonth String
-  birthdayYear  Int
-  userImage     String?
-  password      String
-  groups        UserGroup[]
-  color         String
-  textStatus    String
-  onlineStatus  String
+  id              Int           @id @default(autoincrement())
+  email           String        @unique
+  username        String        @unique
+  showname        String
+  birthdayDay     Int
+  birthdayMonth   String
+  birthdayYear    Int
+  userImage       String?
+  password        String
+  groups          UserGroup[]
+  color           NoImageColors
+  textStatus      String
+  onlineStatus    OnlineSatus
+  friends         User[]        @relation("UserFriends")
+  friendsRelation User[]        @relation("UserFriends")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
 model Group {
-  id     Int         @id @default(autoincrement())
+  id     Int           @id @default(autoincrement())
   users  UserGroup[]
   images String?
-  color  String
+  color  NoImageColors
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -43,4 +45,19 @@ model UserGroup {
   groupId Int
 
   @@id([userId, groupId])
+}
+
+enum NoImageColors {
+  orange
+  red
+  green
+  blue
+  yellow
+}
+
+enum OnlineSatus {
+  offline
+  online
+  idle
+  doNotDisturb
 }
