@@ -11,7 +11,7 @@ model User {
   id              Int           @id @default(autoincrement())
   email           String        @unique
   username        String        @unique
-  showname        String
+  displayName     String
   birthdayDay     Int
   birthdayMonth   String
   birthdayYear    Int
@@ -29,10 +29,11 @@ model User {
 }
 
 model Group {
-  id     Int           @id @default(autoincrement())
-  users  UserGroup[]
-  images String?
-  color  NoImageColors
+  id    Int           @id @default(autoincrement())
+  name  String
+  users UserGroup[]
+  image String?
+  color NoImageColors
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

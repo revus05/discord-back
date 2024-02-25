@@ -18,17 +18,6 @@ export class GroupControllers {
 		return await this.groupService.getGroups(id)
 	}
 
-	@Post('/create')
-	async createGroup(@Req() req: Request) {
-		const { jwt } = req.cookies
-		const response = getIdWithJwt(jwt)
-		if (!response.success) {
-			return response
-		}
-		const id = response.payload.id
-		return await this.groupService.createGroup(id)
-	}
-
 	@Post('/addUser')
 	async addUserToGroup(@Req() req: Request) {
 		const { jwt } = req.cookies

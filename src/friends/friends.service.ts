@@ -2,11 +2,11 @@ import { Injectable } from '@nestjs/common'
 import prisma from '../../prisma/client'
 import { User } from '@prisma/client'
 import { ErrorMessage, SuccessMessage } from '../types/Messages'
-import { AddFriendErrorMessages, GetFriendsErrorMessages } from '../types/friends'
+import { AddFriendErrorMessages, GetFriendsErrorMessages, PublicUser } from '../types/friends'
 
 type GetFriendsResponse =
 	| ErrorMessage<GetFriendsErrorMessages>
-	| SuccessMessage<'Successfully got friends', { friends: User[] }>
+	| SuccessMessage<'Successfully got friends', { friends: PublicUser[] }>
 
 type AddFriendsResponse = AddFriendErrorMessages | SuccessMessage<'Successfully got friends', void>
 
@@ -28,11 +28,29 @@ export class FriendsService {
 					message: 'Unauthorized',
 				}
 			}
+			let friends: PublicUser[] = []
+
+			user.friends.forEach((friend: User) => {
+				friends.push({
+					id: friend.id,
+					username: friend.username,
+					displayName: friend.displayName,
+					birthdayDay: friend.birthdayDay,
+					birthdayMonth: friend.birthdayMonth,
+					birthdayYear: friend.birthdayYear,
+					userImage: friend.userImage,
+					color: friend.color,
+					textStatus: friend.textStatus,
+					onlineStatus: friend.onlineStatus,
+					createdAt: friend.createdAt,
+				})
+			})
+
 			return {
 				success: true,
 				message: 'Successfully got friends',
 				payload: {
-					friends: user.friends,
+					friends: friends,
 				},
 			}
 		} catch (e) {

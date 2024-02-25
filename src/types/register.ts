@@ -1,6 +1,6 @@
 export type RegisterRequestBody = {
 	email: string
-	showname: string
+	displayName: string
 	username: string
 	birthdayYear: string
 	birthdayMonth: string

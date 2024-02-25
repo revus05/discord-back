@@ -28,7 +28,7 @@ const getUserWithId = async (id: number): Promise<GetUserWithIdResponse> => {
 					id: user.id,
 					email: user.email,
 					username: user.username,
-					showname: user.showname,
+					displayName: user.displayName,
 					birthdayDay: user.birthdayDay,
 					birthdayMonth: user.birthdayMonth,
 					birthdayYear: user.birthdayYear,

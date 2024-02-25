@@ -33,7 +33,7 @@ export class RegisterService {
 		console.log({
 			email: requestBody.email,
 			username: requestBody.username,
-			showname: requestBody.showname,
+			displayName: requestBody.displayName,
 			birthdayDay: parseInt(requestBody.birthdayDay),
 			birthdayMonth: requestBody.birthdayMonth,
 			birthdayYear: parseInt(requestBody.birthdayYear),
@@ -48,7 +48,7 @@ export class RegisterService {
 				data: {
 					email: requestBody.email,
 					username: requestBody.username,
-					showname: requestBody.showname,
+					displayName: requestBody.displayName,
 					birthdayDay: parseInt(requestBody.birthdayDay),
 					birthdayMonth: requestBody.birthdayMonth,
 					birthdayYear: parseInt(requestBody.birthdayYear),

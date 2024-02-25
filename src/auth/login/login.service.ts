@@ -1,10 +1,10 @@
-import { Injectable } from '@nestjs/common'
-import { User } from '@prisma/client'
 import * as bcrypt from 'bcryptjs'
 import prisma from '../../../prisma/client'
 import { UserPublicData } from '../../types/user'
 import { GetUserWithCredentialsErrorMessages, LoginRequestBody } from '../../types/login'
 import { ErrorMessage, SuccessMessage } from '../../types/Messages'
+import { Injectable } from '@nestjs/common'
+import { User } from '@prisma/client'
 
 type GetUserWithCredentials =
 	| SuccessMessage<'Authorized', { user: UserPublicData }>
@@ -19,6 +19,7 @@ export class LoginService {
 					email: requestBody.email,
 				},
 			})
+			console.log(user)
 			if (user) {
 				const success = await bcrypt.compare(requestBody.password, user.password)
 				if (!success) {
@@ -35,7 +36,7 @@ export class LoginService {
 							id: user.id,
 							email: user.email,
 							username: user.username,
-							showname: user.showname,
+							displayName: user.displayName,
 							birthdayDay: user.birthdayDay,
 							birthdayMonth: user.birthdayMonth,
 							birthdayYear: user.birthdayYear,

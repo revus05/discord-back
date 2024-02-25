@@ -21,6 +21,7 @@ export class LoginController {
 	async loginWithCredentials(@Body() requestBody: LoginRequestBody, @Res({ passthrough: true }) res: Response) {
 		const response = await this.loginService.getUserWithCredentials(requestBody)
 
+		console.log(response)
 		if (!response.success) {
 			return response as ErrorMessage<GetUserWithCredentialsErrorMessages>
 		}
