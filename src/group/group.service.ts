@@ -3,7 +3,17 @@ import prisma from '../../prisma/client'
 import { Group, NoImageColors, User, UserGroup } from '@prisma/client'
 import { ErrorMessage, SuccessMessage } from '../types/Messages'
 
-type GetGroups = SuccessMessage<'Successfully got groups', { groups: Group[] }> | ErrorMessage<'Unauthorized'>
+interface GroupWithMembers extends Group {
+	members: number
+}
+
+interface GroupWithUsers extends Group {
+	users: UserGroup[]
+}
+
+export type GetGroups =
+	| SuccessMessage<'Successfully got groups', { groups: GroupWithMembers[] }>
+	| ErrorMessage<'Unauthorized'>
 
 type CreateGroupResponse =
 	| SuccessMessage<'Group created successfully', { group: Group; link: UserGroup }>
@@ -40,22 +50,36 @@ export class GroupService {
 			},
 		})
 
-		let groups: Group[] = []
+		let groupsWithMembers: GroupWithMembers[] = []
 		for (let i = 0; i < userGroups.length; i++) {
-			groups.push(
-				...(await prisma.group.findMany({
-					where: {
-						id: userGroups[i].groupId,
-					},
-				})),
-			)
+			const groups: GroupWithUsers[] = await prisma.group.findMany({
+				where: {
+					id: userGroups[i].groupId,
+				},
+				include: {
+					users: true,
+				},
+			})
+
+			groups.forEach((g: Group & { users: UserGroup[] }) => {
+				const groupWithMembers: GroupWithMembers = {
+					id: g.id,
+					name: g.name,
+					image: g.image,
+					color: g.color,
+					members: g.users.length,
+					createdAt: g.createdAt,
+					updatedAt: g.updatedAt,
+				}
+				groupsWithMembers.push(groupWithMembers)
+			})
 		}
 
 		return {
 			success: true,
 			message: 'Successfully got groups',
 			payload: {
-				groups,
+				groups: groupsWithMembers,
 			},
 		}
 	}

@@ -36,6 +36,7 @@ const getUserWithId = async (id: number): Promise<GetUserWithIdResponse> => {
 					color: user.color,
 					textStatus: user.textStatus,
 					onlineStatus: user.onlineStatus,
+					phoneNumber: user.phoneNumber,
 					createdAt: user.createdAt,
 					updatedAt: user.updatedAt,
 				},

@@ -9,7 +9,7 @@ async function bootstrap() {
 		credentials: true,
 		origin: 'http://localhost:5173',
 	})
-	const staticDirectory = `${process.cwd()}/src/public/`
+	const staticDirectory = `${process.cwd()}/public/`
 	app.useStaticAssets(staticDirectory)
 	app.use(cookieParser())
 	await app.listen(5555)

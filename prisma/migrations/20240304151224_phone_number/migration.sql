@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "User" ADD COLUMN     "phoneNumber" BIGINT NOT NULL DEFAULT 375291673651;

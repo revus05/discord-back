@@ -44,6 +44,7 @@ const getUserWithJwt = async (jwt: string): Promise<GetUserWithJwtResponse> => {
 					color: user.color,
 					textStatus: user.textStatus,
 					onlineStatus: user.onlineStatus,
+					phoneNumber: user.phoneNumber,
 					createdAt: user.createdAt,
 					updatedAt: user.updatedAt,
 				},

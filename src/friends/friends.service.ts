@@ -42,6 +42,7 @@ export class FriendsService {
 					color: friend.color,
 					textStatus: friend.textStatus,
 					onlineStatus: friend.onlineStatus,
+					phoneNumber: user.phoneNumber,
 					createdAt: friend.createdAt,
 				})
 			})

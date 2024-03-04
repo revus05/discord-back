@@ -55,6 +55,7 @@ export class RegisterService {
 					userImage: requestBody.userImage,
 					password: requestBody.password,
 					textStatus: '',
+					phoneNumber: null,
 					onlineStatus: 'online',
 					color,
 				},
