@@ -1,24 +1,30 @@
 import { Injectable } from '@nestjs/common'
 import { ErrorMessage, SuccessMessage } from '../types/Messages'
-import { updateUserData, UpdateUserErrorMessages } from '../types/user'
+import { UpdateUserErrorMessages, UpdateUsernameErrorMessages } from '../types/user'
 import { User } from '@prisma/client'
 import prisma from '../../prisma/client'
+import * as bcrypt from 'bcryptjs'
 
-type UpdateUserResponse = SuccessMessage<'Data successfully updated', void> | ErrorMessage<UpdateUserErrorMessages>
+type UpdateUserResponse =
+	| SuccessMessage<'DisplayName successfully updated', void>
+	| ErrorMessage<UpdateUserErrorMessages>
+
+type UpdateUsernameResponse =
+	| SuccessMessage<'Username successfully updated', void>
+	| ErrorMessage<UpdateUsernameErrorMessages>
 
 @Injectable()
 export class UserService {
-	async updateUser(id: number, updateData: updateUserData): Promise<UpdateUserResponse> {
+	async updateUserDisplayName(id: number, { displayName }: { displayName: string }): Promise<UpdateUserResponse> {
 		try {
 			const user: User = await prisma.user.update({
 				where: {
 					id,
 				},
 				data: {
-					...updateData,
+					displayName: displayName,
 				},
 			})
-			console.log(user)
 			if (!user) {
 				return {
 					success: false,
@@ -27,7 +33,57 @@ export class UserService {
 			}
 			return {
 				success: true,
-				message: 'Data successfully updated',
+				message: 'DisplayName successfully updated',
+			}
+		} catch (e) {
+			console.error(e)
+			return {
+				success: false,
+				message: 'Server error',
+			}
+		}
+	}
+
+	async updateUsername(
+		id: number,
+		{ username, password }: { username: string; password: string },
+	): Promise<UpdateUsernameResponse> {
+		try {
+			const user: User = await prisma.user.findFirst({
+				where: {
+					id,
+				},
+			})
+			if (!user) {
+				return {
+					success: false,
+					message: 'Unauthorized',
+				}
+			}
+			const success = await bcrypt.compare(password, user.password)
+			if (!success) {
+				return {
+					success: false,
+					message: 'Wrong password',
+				}
+			}
+			const updatedUser: User = await prisma.user.update({
+				where: {
+					id: user.id,
+				},
+				data: {
+					username: username,
+				},
+			})
+			if (!updatedUser) {
+				return {
+					success: false,
+					message: 'Server error',
+				}
+			}
+			return {
+				success: true,
+				message: 'Username successfully updated',
 			}
 		} catch (e) {
 			console.error(e)

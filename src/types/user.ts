@@ -8,4 +8,6 @@ export type GetUserWithIdErrorMessages = 'No user found error'
 
 export type UpdateUserErrorMessages = 'Unauthorized'
 
+export type UpdateUsernameErrorMessages = 'Unauthorized' | 'Wrong password'
+
 export type updateUserData = Omit<User, 'createdAt' | 'id'>

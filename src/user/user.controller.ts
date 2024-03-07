@@ -7,15 +7,25 @@ import { Request } from 'express'
 export class userController {
 	constructor(private readonly userService: UserService) {}
 
-	@Post('update')
-	async updateUser(@Req() req: Request) {
+	@Post('updateDisplayName')
+	async updateUserDisplayName(@Req() req: Request) {
 		const { jwt } = req.cookies
 		const response = getIdWithJwt(jwt)
 		if (!response.success) {
 			return response
 		}
 		const id = response.payload.id
-		console.log('req.body', req.body)
-		return await this.userService.updateUser(id, req.body)
+		return await this.userService.updateUserDisplayName(id, req.body)
+	}
+
+	@Post('updateUsername')
+	async updateUsername(@Req() req: Request) {
+		const { jwt } = req.cookies
+		const response = getIdWithJwt(jwt)
+		if (!response.success) {
+			return response
+		}
+		const id = response.payload.id
+		return await this.userService.updateUsername(id, req.body)
 	}
 }
