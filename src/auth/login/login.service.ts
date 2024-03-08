@@ -1,6 +1,6 @@
 import * as bcrypt from 'bcryptjs'
 import prisma from '../../../prisma/client'
-import { UserPublicData } from '../../types/user'
+import { UserPublicData } from '../../types/userShowableData'
 import { GetUserWithCredentialsErrorMessages, LoginRequestBody } from '../../types/login'
 import { ErrorMessage, SuccessMessage } from '../../types/Messages'
 import { Injectable } from '@nestjs/common'
@@ -19,7 +19,6 @@ export class LoginService {
 					email: requestBody.email,
 				},
 			})
-			console.log(user)
 			if (user) {
 				const success = await bcrypt.compare(requestBody.password, user.password)
 				if (!success) {

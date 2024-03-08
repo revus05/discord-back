@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common'
 import { ErrorMessage, SuccessMessage } from '../types/Messages'
-import { UpdateUserErrorMessages, UpdateUsernameErrorMessages } from '../types/user'
+import { UpdateUserErrorMessages, UpdateUsernameErrorMessages } from '../types/userShowableData'
 import { User } from '@prisma/client'
 import prisma from '../../prisma/client'
 import * as bcrypt from 'bcryptjs'

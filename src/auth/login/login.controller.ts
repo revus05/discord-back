@@ -2,7 +2,7 @@ import { Body, Controller, Get, Post, Req, Res } from '@nestjs/common'
 import { LoginService } from './login.service'
 import * as JWT from 'jsonwebtoken'
 import { Request, Response } from 'express'
-import { UserPublicData } from '../../types/user'
+import { UserPublicData } from '../../types/userShowableData'
 import getUserWithJwt from '../../getUsers/getUserWithJwt'
 import { GetUserWithCredentialsErrorMessages, LoginRequestBody } from '../../types/login'
 import { ErrorMessage, SuccessMessage } from '../../types/Messages'
@@ -21,7 +21,6 @@ export class LoginController {
 	async loginWithCredentials(@Body() requestBody: LoginRequestBody, @Res({ passthrough: true }) res: Response) {
 		const response = await this.loginService.getUserWithCredentials(requestBody)
 
-		console.log(response)
 		if (!response.success) {
 			return response as ErrorMessage<GetUserWithCredentialsErrorMessages>
 		}

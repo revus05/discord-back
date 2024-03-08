@@ -30,19 +30,6 @@ export class RegisterService {
 				color = 'yellow'
 				break
 		}
-		console.log({
-			email: requestBody.email,
-			username: requestBody.username,
-			displayName: requestBody.displayName,
-			birthdayDay: parseInt(requestBody.birthdayDay),
-			birthdayMonth: requestBody.birthdayMonth,
-			birthdayYear: parseInt(requestBody.birthdayYear),
-			userImage: requestBody.userImage,
-			password: requestBody.password,
-			textStatus: '',
-			onlineStatus: 'online',
-			color,
-		})
 		try {
 			const user: User = await prisma.user.create({
 				data: {

@@ -8,22 +8,24 @@ datasource db {
 }
 
 model User {
-  id              Int           @id @default(autoincrement())
-  email           String        @unique
-  username        String        @unique
-  displayName     String
-  birthdayDay     Int
-  birthdayMonth   String
-  birthdayYear    Int
-  userImage       String?
-  password        String
-  groups          UserGroup[]
-  color           NoImageColors
-  textStatus      String
-  onlineStatus    OnlineSatus
-  phoneNumber     String?
-  friends         User[]        @relation("UserFriends")
-  friendsRelation User[]        @relation("UserFriends")
+  id               Int             @id @default(autoincrement())
+  email            String          @unique
+  username         String          @unique
+  displayName      String
+  birthdayDay      Int
+  birthdayMonth    String
+  birthdayYear     Int
+  userImage        String?
+  password         String
+  groups           UserGroup[]
+  color            NoImageColors
+  textStatus       String
+  onlineStatus     OnlineSatus
+  phoneNumber      String?
+  friends          User[]          @relation("UserFriends")
+  friendsRelation  User[]          @relation("UserFriends")
+  sentRequests     FriendRequest[] @relation("SentRequests")
+  receivedRequests FriendRequest[] @relation("ReceivedRequests")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -49,6 +51,16 @@ model UserGroup {
   @@id([userId, groupId])
 }
 
+model FriendRequest {
+  id        Int                 @id @default(autoincrement())
+  status    FriendRequestStatus
+  from      User                @relation("SentRequests", fields: [fromId], references: [id])
+  fromId    Int
+  to        User                @relation("ReceivedRequests", fields: [toId], references: [id])
+  toId      Int
+  createdAt DateTime            @default(now())
+}
+
 enum NoImageColors {
   orange
   red
@@ -62,4 +74,9 @@ enum OnlineSatus {
   online
   idle
   doNotDisturb
+}
+
+enum FriendRequestStatus {
+  pending
+  blocked
 }

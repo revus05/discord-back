@@ -1,5 +1,5 @@
 import { User } from '@prisma/client'
-import { GetUsersWithJwtErrorMessages, UserPublicData } from '../types/user'
+import { GetUsersWithJwtErrorMessages, UserPublicData } from '../types/userShowableData'
 import prisma from '../../prisma/client'
 import getIdWithJwt from '../logic/getIdWithJwt'
 import { ErrorMessage, SuccessMessage } from '../types/Messages'

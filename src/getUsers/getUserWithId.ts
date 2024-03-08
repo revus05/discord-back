@@ -1,5 +1,5 @@
 import { User } from '@prisma/client'
-import { GetUserWithIdErrorMessages, UserPublicData } from '../types/user'
+import { GetUserWithIdErrorMessages, UserPublicData } from '../types/userShowableData'
 import prisma from '../../prisma/client'
 import { ErrorMessage, SuccessMessage } from '../types/Messages'
 

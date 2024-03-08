@@ -8,7 +8,7 @@ export class FriendsControllers {
 	constructor(private readonly friendsService: FriendsService) {}
 
 	@Get('/get')
-	async getGroups(@Req() req: Request) {
+	async getFriends(@Req() req: Request) {
 		const { jwt } = req.cookies
 		const response = getIdWithJwt(jwt)
 		if (!response.success) {
@@ -18,14 +18,47 @@ export class FriendsControllers {
 		return await this.friendsService.getFriends(id)
 	}
 
-	@Post('/add')
-	async createGroup(@Req() req: Request) {
+	@Post('/sendFriendRequest')
+	async addFriend(@Req() req: Request) {
 		const { jwt } = req.cookies
 		const response = getIdWithJwt(jwt)
 		if (!response.success) {
 			return response
 		}
 		const id = response.payload.id
-		return await this.friendsService.addFriend(id, req.body)
+		return await this.friendsService.sendRequest(id, req.body)
+	}
+
+	@Get('/getFriendRequests')
+	async getFriendRequests(@Req() req: Request) {
+		const { jwt } = req.cookies
+		const response = getIdWithJwt(jwt)
+		if (!response.success) {
+			return response
+		}
+		const id = response.payload.id
+		return await this.friendsService.getFriendRequests(id)
+	}
+
+	@Post('/acceptRequest')
+	async acceptRequest(@Req() req: Request) {
+		const { jwt } = req.cookies
+		const response = getIdWithJwt(jwt)
+		if (!response.success) {
+			return response
+		}
+		const id = response.payload.id
+		return await this.friendsService.acceptRequest(id, req.body)
+	}
+
+	@Post('/removeFriend')
+	async removeFriend(@Req() req: Request) {
+		const { jwt } = req.cookies
+		const response = getIdWithJwt(jwt)
+		if (!response.success) {
+			return response
+		}
+		const id = response.payload.id
+		return await this.friendsService.removeFriend(id, req.body)
 	}
 }
