@@ -10,7 +10,7 @@ export class LoginController {
 
 	@Get('/jwt')
 	async loginWithJwt(@Req() req: Request): Promise<GetUserWithJwtResponse> {
-		return await getUserWithJwt(req.cookies)
+		return await getUserWithJwt(req.cookies.jwt)
 	}
 
 	@Post('/credentials')
