@@ -27,8 +27,8 @@ model User {
   sentRequests     FriendRequest[] @relation("SentRequests")
   receivedRequests FriendRequest[] @relation("ReceivedRequests")
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(dbgenerated("NOW()")) @db.Timestamptz(3)
+  updatedAt DateTime @updatedAt @db.Timestamptz(3)
 }
 
 model Group {
@@ -38,8 +38,8 @@ model Group {
   image String?
   color NoImageColors
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(dbgenerated("NOW()")) @db.Timestamptz(3)
+  updatedAt DateTime @updatedAt @db.Timestamptz(3)
 }
 
 model UserGroup {
@@ -58,7 +58,7 @@ model FriendRequest {
   fromId    Int
   to        User                @relation("ReceivedRequests", fields: [toId], references: [id])
   toId      Int
-  createdAt DateTime            @default(now())
+  createdAt DateTime            @default(dbgenerated("NOW()")) @db.Timestamptz(3)
 }
 
 enum NoImageColors {
