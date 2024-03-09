@@ -1,6 +1,12 @@
 import { Injectable } from '@nestjs/common'
 import { ErrorMessage, SuccessMessage } from '../../types/messages'
-import { UpdateUserErrorMessages, UpdateUsernameErrorMessages, UserWithoutPassword } from '../../types/userShowableData'
+import {
+	UpdateDisplayNameRequestData,
+	UpdateUserErrorMessages,
+	UpdateUsernameErrorMessages,
+	UpdateUsernameRequestData,
+	UserWithoutPassword,
+} from '../../types/userShowableData'
 import { User } from '@prisma/client'
 import prisma from '../../../prisma/client'
 import * as bcrypt from 'bcryptjs'
@@ -16,7 +22,10 @@ export type UpdateUsernameResponse =
 
 @Injectable()
 export class UserService {
-	async updateUserDisplayName(jwt: string, { displayName }: { displayName: string }): Promise<UpdateUserResponse> {
+	async updateUserDisplayName(
+		jwt: string,
+		{ displayName }: UpdateDisplayNameRequestData,
+	): Promise<UpdateUserResponse> {
 		// getting id
 		const response = getIdWithJwt(jwt)
 		if (!response.success) {
@@ -63,7 +72,7 @@ export class UserService {
 
 	async updateUsername(
 		jwt: string,
-		{ username, password }: { username: string; password: string },
+		{ username, password }: UpdateUsernameRequestData,
 	): Promise<UpdateUsernameResponse> {
 		// getting id
 		const response = getIdWithJwt(jwt)

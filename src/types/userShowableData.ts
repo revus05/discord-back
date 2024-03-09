@@ -21,4 +21,4 @@ export type UserIncludes = {
 
 export type UpdateUsernameRequestData = { username: string; password: string }
 
-export type UpdateDisplayName = { displayName: string }
+export type UpdateDisplayNameRequestData = { displayName: string }

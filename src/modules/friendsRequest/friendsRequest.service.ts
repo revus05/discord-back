@@ -2,9 +2,11 @@ import { Injectable } from '@nestjs/common'
 import { FriendRequest, User } from '@prisma/client'
 import prisma from '../../../prisma/client'
 import {
+	AcceptFriendRequestRequestBody,
 	AddFriendErrorMessages,
 	FriendRequestsWithUsers,
 	GetFriendsRequestsErrorMessages,
+	SendFriendRequestRequestBody,
 	SendRequestErrorMessages,
 } from '../../types/friends'
 import { ErrorMessage, SuccessMessage } from '../../types/messages'
@@ -100,7 +102,7 @@ export class FriendsRequestService {
 		}
 	}
 
-	async acceptRequest(jwt: string, { requestId }: { requestId: number }): Promise<AddFriendsResponse> {
+	async acceptRequest(jwt: string, { requestId }: AcceptFriendRequestRequestBody): Promise<AddFriendsResponse> {
 		try {
 			// checking if the user exists
 			const response = await getUserWithJwt(jwt, { friends: true })
@@ -207,7 +209,7 @@ export class FriendsRequestService {
 		}
 	}
 
-	async sendRequest(jwt: string, { username }: { username: string }): Promise<SendFriendRequestResponse> {
+	async sendRequest(jwt: string, { username }: SendFriendRequestRequestBody): Promise<SendFriendRequestResponse> {
 		try {
 			// checking if user exists and getting him
 			const response = await getUserWithJwt(jwt, { friends: true })
