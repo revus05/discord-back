@@ -1,6 +1,5 @@
 import { Body, Controller, Get, Post, Req } from '@nestjs/common'
 import { GetGroupsResponse, GroupService } from './group.service'
-import getIdWithJwt from '../../utils/getIdWithJwt'
 import { Request } from 'express'
 import { AddUserToGroupRequestBody } from '../../types/group'
 
