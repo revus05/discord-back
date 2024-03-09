@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common'
 import prisma from '../../prisma/client'
 import { Group, NoImageColors, User, UserGroup } from '@prisma/client'
-import { ErrorMessage, SuccessMessage } from '../types/Messages'
+import { ErrorMessage, SuccessMessage } from '../types/messages'
 
 interface GroupWithMembers extends Group {
 	members: number

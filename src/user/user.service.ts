@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common'
-import { ErrorMessage, SuccessMessage } from '../types/Messages'
+import { ErrorMessage, SuccessMessage } from '../types/messages'
 import { UpdateUserErrorMessages, UpdateUsernameErrorMessages } from '../types/userShowableData'
 import { User } from '@prisma/client'
 import prisma from '../../prisma/client'

@@ -1,7 +1,7 @@
 import { Prisma, User } from '@prisma/client'
 import { GetUserWithIdErrorMessages, UserIncludes, UserWithoutPassword } from '../types/userShowableData'
 import prisma from '../../prisma/client'
-import { ErrorMessage, SuccessMessage } from '../types/Messages'
+import { ErrorMessage, SuccessMessage } from '../types/messages'
 
 export type GetUserWithIdResponse =
 	| SuccessMessage<'Successfully got user', { user: UserWithoutPassword & UserIncludes }>

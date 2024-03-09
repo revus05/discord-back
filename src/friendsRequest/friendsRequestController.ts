@@ -1,42 +1,31 @@
-import { Controller, Get, Post, Req } from '@nestjs/common'
-import { FriendsRequestService } from './friendsRequest.service'
+import { Body, Controller, Get, Post, Req } from '@nestjs/common'
+import {
+	AddFriendsResponse,
+	FriendsRequestService,
+	GetFriendRequestsResponse,
+	SendFriendRequestResponse,
+} from './friendsRequest.service'
 import { Request } from 'express'
-import getIdWithJwt from '../utils/getIdWithJwt'
 
 @Controller('/friendsRequest')
 export class FriendsRequestController {
 	constructor(private readonly FriendsRequestService: FriendsRequestService) {}
 
 	@Get('/get')
-	async getFriendRequests(@Req() req: Request) {
-		const { jwt } = req.cookies
-		const response = getIdWithJwt(jwt)
-		if (!response.success) {
-			return response
-		}
-		const id = response.payload.id
-		return await this.FriendsRequestService.getFriendRequests(id)
+	async getFriendRequests(@Req() req: Request): Promise<GetFriendRequestsResponse> {
+		return await this.FriendsRequestService.getFriendRequests(req.cookies.jwt)
 	}
 
 	@Post('/accept')
-	async acceptRequest(@Req() req: Request) {
-		const { jwt } = req.cookies
-		const response = getIdWithJwt(jwt)
-		if (!response.success) {
-			return response
-		}
-		const id = response.payload.id
-		return await this.FriendsRequestService.acceptRequest(id, req.body)
+	async acceptRequest(@Req() req: Request, @Body() requestBody: { requestId: number }): Promise<AddFriendsResponse> {
+		return await this.FriendsRequestService.acceptRequest(req.cookies.jwt, requestBody)
 	}
 
 	@Post('/send')
-	async addFriend(@Req() req: Request) {
-		const { jwt } = req.cookies
-		const response = getIdWithJwt(jwt)
-		if (!response.success) {
-			return response
-		}
-		const id = response.payload.id
-		return await this.FriendsRequestService.sendRequest(id, req.body)
+	async addFriend(
+		@Req() req: Request,
+		@Body() requestBody: { username: string },
+	): Promise<SendFriendRequestResponse> {
+		return await this.FriendsRequestService.sendRequest(req.cookies.jwt, requestBody)
 	}
 }

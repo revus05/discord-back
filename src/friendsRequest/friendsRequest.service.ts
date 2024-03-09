@@ -7,84 +7,59 @@ import {
 	GetFriendsRequestsErrorMessages,
 	SendRequestErrorMessages,
 } from '../types/friends'
-import { UserShowableData } from '../types/userShowableData'
-import { ErrorMessage, SuccessMessage } from '../types/Messages'
+import { ErrorMessage, SuccessMessage } from '../types/messages'
+import getUserWithJwt from '../getUsers/getUserWithJwt'
+import getUserShowableDataById from '../getUsers/getUserShowableDataById'
+import getUserShowableData from '../utils/getUserShowableData'
+import { UserIncludes, UserShowableData, UserWithoutPassword } from '../types/userShowableData'
 
-type GetFriendRequestsResponse =
+export type GetFriendRequestsResponse =
 	| SuccessMessage<'Successfully got friend requests', { friendRequestsWithUsers: FriendRequestsWithUsers[] }>
 	| ErrorMessage<GetFriendsRequestsErrorMessages>
 
-type SendFriendRequestResponse = SuccessMessage<'Friend request send', void> | ErrorMessage<SendRequestErrorMessages>
+export type SendFriendRequestResponse =
+	| SuccessMessage<'Friend request send', { friend: UserShowableData }>
+	| ErrorMessage<SendRequestErrorMessages>
 
-type AddFriendsResponse = AddFriendErrorMessages | SuccessMessage<'Successfully added friend', void>
+export type AddFriendsResponse =
+	| AddFriendErrorMessages
+	| SuccessMessage<'Successfully added friend', { friend: UserWithoutPassword }>
 
 @Injectable()
 export class FriendsRequestService {
-	async getFriendRequests(id: number): Promise<GetFriendRequestsResponse> {
+	async getFriendRequests(jwt: string): Promise<GetFriendRequestsResponse> {
 		try {
-			const user: User = await prisma.user.findFirst({
-				where: {
-					id,
-				},
-			})
-			if (!user) {
+			// checking if the user exists
+			const response = await getUserWithJwt(jwt)
+			if (!response.success) {
 				return {
 					success: false,
 					message: 'Unauthorized',
 				}
 			}
+			const user: UserWithoutPassword = response.payload.user
+			const id = user.id
+
+			// getting friend requests from user
 			const outGoingFriendsRequests: FriendRequest[] = await prisma.friendRequest.findMany({
 				where: {
 					fromId: id,
 				},
 			})
 
+			// getting friend requests to user
 			const incomingFriendsRequests: FriendRequest[] = await prisma.friendRequest.findMany({
 				where: {
 					toId: id,
 				},
 			})
 
+			//
 			let friendRequestsWithUsers: FriendRequestsWithUsers[] = []
-
 			for (let i = 0; i < outGoingFriendsRequests.length; i++) {
-				const fromUser: UserShowableData = await prisma.user.findFirst({
-					where: {
-						id: outGoingFriendsRequests[i].fromId,
-					},
-					select: {
-						id: true,
-						username: true,
-						displayName: true,
-						birthdayDay: true,
-						birthdayMonth: true,
-						birthdayYear: true,
-						userImage: true,
-						color: true,
-						textStatus: true,
-						onlineStatus: true,
-						createdAt: true,
-					},
-				})
+				const fromUser = getUserShowableData(user)
 
-				const toUser: UserShowableData = await prisma.user.findFirst({
-					where: {
-						id: outGoingFriendsRequests[i].toId,
-					},
-					select: {
-						id: true,
-						username: true,
-						displayName: true,
-						birthdayDay: true,
-						birthdayMonth: true,
-						birthdayYear: true,
-						userImage: true,
-						color: true,
-						textStatus: true,
-						onlineStatus: true,
-						createdAt: true,
-					},
-				})
+				const toUser = await getUserShowableDataById(outGoingFriendsRequests[i].toId)
 
 				let obj: FriendRequestsWithUsers = {
 					friendRequest: outGoingFriendsRequests[i],
@@ -96,43 +71,9 @@ export class FriendsRequestService {
 			}
 
 			for (let i = 0; i < incomingFriendsRequests.length; i++) {
-				const fromUser: UserShowableData = await prisma.user.findFirst({
-					where: {
-						id: incomingFriendsRequests[i].fromId,
-					},
-					select: {
-						id: true,
-						username: true,
-						displayName: true,
-						birthdayDay: true,
-						birthdayMonth: true,
-						birthdayYear: true,
-						userImage: true,
-						color: true,
-						textStatus: true,
-						onlineStatus: true,
-						createdAt: true,
-					},
-				})
+				const fromUser = await getUserShowableDataById(incomingFriendsRequests[i].fromId)
 
-				const toUser: UserShowableData = await prisma.user.findFirst({
-					where: {
-						id: incomingFriendsRequests[i].toId,
-					},
-					select: {
-						id: true,
-						username: true,
-						displayName: true,
-						birthdayDay: true,
-						birthdayMonth: true,
-						birthdayYear: true,
-						userImage: true,
-						color: true,
-						textStatus: true,
-						onlineStatus: true,
-						createdAt: true,
-					},
-				})
+				const toUser = getUserShowableData(user)
 
 				let obj: FriendRequestsWithUsers = {
 					friendRequest: incomingFriendsRequests[i],
@@ -159,25 +100,28 @@ export class FriendsRequestService {
 		}
 	}
 
-	async acceptRequest(id: number, { requestId }: { requestId: number }) {
+	async acceptRequest(jwt: string, { requestId }: { requestId: number }): Promise<AddFriendsResponse> {
 		try {
-			const user: User = await prisma.user.findFirst({
-				where: {
-					id,
-				},
-			})
-			if (!user) {
+			// checking if the user exists
+			const response = await getUserWithJwt(jwt, { friends: true })
+			if (!response.success) {
 				return {
 					success: false,
 					message: 'Unauthorized',
 				}
 			}
-			const acceptedRequest = await prisma.friendRequest.delete({
+			const user: UserWithoutPassword & UserIncludes = response.payload.user
+			const id = user.id
+
+			// delete friend request
+			const acceptedRequest: FriendRequest = await prisma.friendRequest.delete({
 				where: {
 					id: requestId,
 				},
 			})
-			return await this.addFriend(id, { friendId: acceptedRequest.fromId })
+
+			// adding friend to friends
+			return await this.addFriend(id, user, { friendId: acceptedRequest.fromId })
 		} catch (e) {
 			console.log(e)
 			return {
@@ -187,68 +131,12 @@ export class FriendsRequestService {
 		}
 	}
 
-	async sendRequest(id: number, { username }: { username: string }): Promise<SendFriendRequestResponse> {
-		try {
-			const user: User & { friends: User[] } = await prisma.user.findFirst({
-				where: {
-					id,
-				},
-				include: {
-					friends: true,
-				},
-			})
-			if (!user) {
-				return {
-					success: false,
-					message: 'Unauthorized',
-				}
-			}
-			const friends = user.friends
-			const alreadyExisting = friends.find(friend => friend.username === username)
-			if (alreadyExisting) {
-				return {
-					success: false,
-					message: "You're already friends with that user",
-				}
-			}
-			const friend: User = await prisma.user.findFirst({
-				where: {
-					username: username,
-				},
-			})
-			if (!friend) {
-				return {
-					success: false,
-					message: 'Incorrect username',
-				}
-			}
-			const friendRequest: FriendRequest = await prisma.friendRequest.create({
-				data: {
-					fromId: id,
-					toId: friend.id,
-					status: 'pending',
-				},
-			})
-			if (friendRequest) {
-				return {
-					success: true,
-					message: 'Friend request send',
-				}
-			}
-			return {
-				success: false,
-				message: 'Server error',
-			}
-		} catch (e) {
-			console.log(e)
-			return {
-				success: false,
-				message: 'Server error',
-			}
-		}
-	}
-
-	async addFriend(id: number, { friendId }: { friendId: number }): Promise<AddFriendsResponse> {
+	private async addFriend(
+		id: number,
+		user: UserWithoutPassword & UserIncludes,
+		{ friendId }: { friendId: number },
+	): Promise<AddFriendsResponse> {
+		// checking if the friend in request is user
 		if (id === friendId) {
 			return {
 				success: false,
@@ -256,22 +144,7 @@ export class FriendsRequestService {
 			}
 		}
 		try {
-			const user: User & { friends: User[] } = await prisma.user.findFirst({
-				where: {
-					id,
-				},
-				include: {
-					friends: true,
-				},
-			})
-			if (!user) {
-				return {
-					success: false,
-					message: 'Unauthorized',
-				}
-			}
-
-			// Проверяем, что пользователь, которого мы пытаемся добавить, существует
+			// checking if the friend exists
 			const friendUser: User = await prisma.user.findFirst({
 				where: {
 					id: friendId,
@@ -284,7 +157,7 @@ export class FriendsRequestService {
 				}
 			}
 
-			// Проверяем, что пользователь не в списке друзей
+			// checking that user is not in friend's friend list and vice versa
 			if (!user.friends.find((friend: User) => friend.id === friendId)) {
 				const updatedUser: User = await prisma.user.update({
 					where: {
@@ -298,7 +171,7 @@ export class FriendsRequestService {
 						},
 					},
 				})
-				const updatedFriendUser = await prisma.user.update({
+				const updatedFriend: User = await prisma.user.update({
 					where: {
 						id: friendId,
 					},
@@ -310,16 +183,105 @@ export class FriendsRequestService {
 						},
 					},
 				})
-				if (updatedUser && updatedFriendUser) {
+				const { password, ...updatedFriendWithoutPassword } = updatedFriend
+				if (updatedUser && updatedFriend) {
 					return {
 						success: true,
 						message: 'Successfully added friend',
+						payload: {
+							friend: updatedFriendWithoutPassword,
+						},
 					}
 				}
 			}
 			return {
 				success: false,
 				message: 'User already your friend',
+			}
+		} catch (e) {
+			console.log(e)
+			return {
+				success: false,
+				message: 'Server error',
+			}
+		}
+	}
+
+	async sendRequest(jwt: string, { username }: { username: string }): Promise<SendFriendRequestResponse> {
+		try {
+			// checking if user exists and getting him
+			const response = await getUserWithJwt(jwt, { friends: true })
+			if (!response.success) {
+				return {
+					success: false,
+					message: 'Unauthorized',
+				}
+			}
+			const user = response.payload.user
+			const friends = user.friends
+
+			// checking if friend already in user friends
+			const alreadyExisting = friends.find(friend => friend.username === username)
+			if (alreadyExisting) {
+				return {
+					success: false,
+					message: "You're already friends with that user",
+				}
+			}
+
+			// checking if the user with provided username exists
+			const friend: User = await prisma.user.findFirst({
+				where: {
+					username: username,
+				},
+			})
+			if (!friend) {
+				return {
+					success: false,
+					message: 'Incorrect username',
+				}
+			}
+
+			// checking if the request already exists
+			const alreadyExistingRequest: FriendRequest = await prisma.friendRequest.findFirst({
+				where: {
+					OR: [
+						{
+							fromId: user.id,
+							toId: friend.id,
+						},
+						{
+							fromId: friend.id,
+							toId: user.id,
+						},
+					],
+				},
+			})
+			if (alreadyExistingRequest) {
+				return {
+					success: false,
+					message: 'Request already sent to this user',
+				}
+			}
+
+			// creating friend request
+			const friendRequest: FriendRequest = await prisma.friendRequest.create({
+				data: {
+					fromId: user.id,
+					toId: friend.id,
+					status: 'pending',
+				},
+			})
+			if (friendRequest) {
+				return {
+					success: true,
+					message: 'Friend request send',
+					payload: { friend: getUserShowableData(friend) },
+				}
+			}
+			return {
+				success: false,
+				message: 'Server error',
 			}
 		} catch (e) {
 			console.log(e)

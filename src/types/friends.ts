@@ -1,4 +1,4 @@
-import { ErrorMessage } from './Messages'
+import { ErrorMessage } from './messages'
 import { FriendRequest, User } from '@prisma/client'
 import { UserShowableData } from './userShowableData'
 
@@ -10,7 +10,11 @@ export type AddFriendErrorMessages = ErrorMessage<
 
 export type PublicUser = Omit<User, 'email' | 'updatedAt' | 'password'>
 
-export type SendRequestErrorMessages = 'Unauthorized' | "You're already friends with that user" | 'Incorrect username'
+export type SendRequestErrorMessages =
+	| 'Unauthorized'
+	| "You're already friends with that user"
+	| 'Incorrect username'
+	| 'Request already sent to this user'
 
 export type GetFriendsRequestsErrorMessages = 'Unauthorized'
 
