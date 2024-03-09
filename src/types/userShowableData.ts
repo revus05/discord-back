@@ -4,7 +4,7 @@ export type UserWithoutPassword = Omit<User, 'password'>
 
 export type UserShowableData = Omit<User, 'email' | 'password' | 'phoneNumber' | 'updatedAt'>
 
-export type GetUsersWithJwtErrorMessages = 'Unauthorized' | 'No user with your data'
+export type GetUsersWithJwtErrorMessages = 'Unauthorized'
 
 export type GetUserWithIdErrorMessages = 'No user found error'
 

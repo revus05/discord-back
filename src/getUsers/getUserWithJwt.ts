@@ -9,7 +9,7 @@ export type GetUserWithJwtResponse =
 	| ErrorMessage<GetUsersWithJwtErrorMessages>
 
 const getUserWithJwt = async (jwt: string): Promise<GetUserWithJwtResponse> => {
-	// получаем id пользователя из jwt
+	// getting user id from jwt
 	const response = getIdWithJwt(jwt)
 	if (!response.success) {
 		return {
@@ -18,18 +18,21 @@ const getUserWithJwt = async (jwt: string): Promise<GetUserWithJwtResponse> => {
 		}
 	}
 	try {
+		// checking if the user exists
 		const user: User = await prisma.user.findFirst({
 			where: {
 				id: response.payload.id,
 			},
 		})
+		// if user doesn't exist, returning 'Unauthorized'
 		if (!user) {
 			return {
 				success: false,
-				message: 'No user with your data',
+				message: 'Unauthorized',
 			}
 		}
 
+		// Separate user data from the password
 		const { password, ...userWithoutPassword } = user
 
 		return {

@@ -1,7 +1,7 @@
 import * as bcrypt from 'bcryptjs'
 import prisma from '../../../prisma/client'
 import { UserWithoutPassword } from '../../types/userShowableData'
-import { LoginWithCredentialsErrorMessages, LoginRequestBody } from '../../types/login'
+import { LoginWithCredentialsErrorMessages, LoginCredentials } from '../../types/login'
 import { ErrorMessage, SuccessMessage } from '../../types/Messages'
 import { Injectable } from '@nestjs/common'
 import { User } from '@prisma/client'
@@ -13,7 +13,7 @@ export type LoginWithCredentials =
 
 @Injectable()
 export class LoginService {
-	async loginWithCredentials(requestBody: LoginRequestBody): Promise<LoginWithCredentials> {
+	async loginWithCredentials(requestBody: LoginCredentials): Promise<LoginWithCredentials> {
 		try {
 			// checking if the user with this email exists
 			const user: User = await prisma.user.findFirst({
