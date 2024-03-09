@@ -1,7 +1,7 @@
 import { Body, Controller, Post, Req } from '@nestjs/common'
 import { UpdateUsernameResponse, UpdateUserResponse, UserService } from './user.service'
 import { Request } from 'express'
-import { UpdateDisplayName, UpdateUsernameRequestData } from '../types/userShowableData'
+import { UpdateDisplayName, UpdateUsernameRequestData } from '../../types/userShowableData'
 
 @Controller('/user')
 export class userController {

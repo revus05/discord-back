@@ -1,8 +1,8 @@
 import { Body, Controller, Get, Post, Req, Res } from '@nestjs/common'
 import { LoginWithCredentials, LoginService } from './login.service'
 import { Request, Response } from 'express'
-import getUserWithJwt, { GetUserWithJwtResponse } from '../../getUsers/getUserWithJwt'
-import { LoginCredentials } from '../../types/login'
+import getUserWithJwt, { GetUserWithJwtResponse } from '../../../getUsers/getUserWithJwt'
+import { LoginCredentials } from '../../../types/login'
 
 @Controller('/login')
 export class LoginController {

@@ -1,7 +1,7 @@
 import { Body, Controller, Get, Post, Req } from '@nestjs/common'
 import { Request } from 'express'
 import { FriendsService, GetFriendsResponse, RemoveFriendResponse } from './friends.service'
-import { RemoveFriendRequestBody } from '../types/friends'
+import { RemoveFriendRequestBody } from '../../types/friends'
 
 @Controller('/friends')
 export class FriendsControllers {

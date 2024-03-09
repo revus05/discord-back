@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common'
-import { ErrorMessage, SuccessMessage } from '../types/messages'
-import { UpdateUserErrorMessages, UpdateUsernameErrorMessages, UserWithoutPassword } from '../types/userShowableData'
+import { ErrorMessage, SuccessMessage } from '../../types/messages'
+import { UpdateUserErrorMessages, UpdateUsernameErrorMessages, UserWithoutPassword } from '../../types/userShowableData'
 import { User } from '@prisma/client'
-import prisma from '../../prisma/client'
+import prisma from '../../../prisma/client'
 import * as bcrypt from 'bcryptjs'
-import getIdWithJwt from '../utils/getIdWithJwt'
+import getIdWithJwt from '../../utils/getIdWithJwt'
 
 export type UpdateUserResponse =
 	| SuccessMessage<'DisplayName successfully updated', { user: UserWithoutPassword }>

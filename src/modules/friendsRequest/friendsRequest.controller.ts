@@ -6,7 +6,7 @@ import {
 	SendFriendRequestResponse,
 } from './friendsRequest.service'
 import { Request } from 'express'
-import { AcceptFriendRequestRequestBody, SendFriendRequestRequestBody } from '../types/friends'
+import { AcceptFriendRequestRequestBody, SendFriendRequestRequestBody } from '../../types/friends'
 
 @Controller('/friendsRequest')
 export class FriendsRequestController {

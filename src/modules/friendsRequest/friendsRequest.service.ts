@@ -1,17 +1,17 @@
 import { Injectable } from '@nestjs/common'
 import { FriendRequest, User } from '@prisma/client'
-import prisma from '../../prisma/client'
+import prisma from '../../../prisma/client'
 import {
 	AddFriendErrorMessages,
 	FriendRequestsWithUsers,
 	GetFriendsRequestsErrorMessages,
 	SendRequestErrorMessages,
-} from '../types/friends'
-import { ErrorMessage, SuccessMessage } from '../types/messages'
-import getUserWithJwt from '../getUsers/getUserWithJwt'
-import getUserShowableDataById from '../getUsers/getUserShowableDataById'
-import getUserShowableData from '../utils/getUserShowableData'
-import { UserIncludes, UserShowableData, UserWithoutPassword } from '../types/userShowableData'
+} from '../../types/friends'
+import { ErrorMessage, SuccessMessage } from '../../types/messages'
+import getUserWithJwt from '../../getUsers/getUserWithJwt'
+import getUserShowableDataById from '../../getUsers/getUserShowableDataById'
+import getUserShowableData from '../../utils/getUserShowableData'
+import { UserIncludes, UserShowableData, UserWithoutPassword } from '../../types/userShowableData'
 
 export type GetFriendRequestsResponse =
 	| SuccessMessage<'Successfully got friend requests', { friendRequestsWithUsers: FriendRequestsWithUsers[] }>

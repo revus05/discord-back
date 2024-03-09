@@ -1,4 +1,5 @@
 import { FriendRequest, User, UserGroup } from '@prisma/client'
+import { UserGroupWithGroup } from './group'
 
 export type UserWithoutPassword = Omit<User, 'password'>
 
