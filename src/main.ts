@@ -12,6 +12,8 @@ async function bootstrap() {
 	const staticDirectory = `${process.cwd()}/public/`
 	app.useStaticAssets(staticDirectory)
 	app.use(cookieParser())
-	await app.listen(5555)
+	await app.listen(5555, () => {
+		console.log('============ Server is running on port: 5555 ============')
+	})
 }
-bootstrap()
+bootstrap().then()

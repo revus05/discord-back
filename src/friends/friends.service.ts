@@ -299,7 +299,7 @@ export class FriendsService {
 					id: requestId,
 				},
 			})
-			return await this.addFriend(id, { friendId: acceptedRequest.toId })
+			return await this.addFriend(id, { friendId: acceptedRequest.fromId })
 		} catch (e) {
 			console.log(e)
 			return {

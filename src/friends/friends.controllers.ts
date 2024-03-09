@@ -40,7 +40,7 @@ export class FriendsControllers {
 		return await this.friendsService.getFriendRequests(id)
 	}
 
-	@Post('/acceptRequest')
+	@Post('/acceptFriendRequest')
 	async acceptRequest(@Req() req: Request) {
 		const { jwt } = req.cookies
 		const response = getIdWithJwt(jwt)
