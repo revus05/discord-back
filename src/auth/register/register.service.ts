@@ -1,36 +1,23 @@
 import { Injectable } from '@nestjs/common'
-import { NoImageColors, Prisma, User } from '@prisma/client'
+import { Prisma, User } from '@prisma/client'
 import prisma from '../../../prisma/client'
-import { RegisterRequestBody, RegisterUserErrorMessages } from '../../types/register'
+import { RegisterCredentials, RegisterUserErrorMessages } from '../../types/register'
 import { ErrorMessage, SuccessMessage } from '../../types/Messages'
+import * as bcrypt from 'bcryptjs'
+import generateNoImageColor from '../../utils/generateNoImageColor'
+import { UserWithoutPassword } from '../../types/userShowableData'
 
 export type RegisterResponse =
-	| SuccessMessage<'Registration completed', undefined>
+	| SuccessMessage<'Registration completed', { user: UserWithoutPassword }>
 	| ErrorMessage<RegisterUserErrorMessages>
 
 @Injectable()
 export class RegisterService {
-	async register(requestBody: RegisterRequestBody): Promise<RegisterResponse> {
-		const random = Math.floor(Math.random() * 5)
-		let color: NoImageColors = 'blue'
-		switch (random) {
-			case 1:
-				color = 'orange'
-				break
-			case 2:
-				color = 'red'
-				break
-			case 3:
-				color = 'green'
-				break
-			case 4:
-				color = 'blue'
-				break
-			case 5:
-				color = 'yellow'
-				break
-		}
+	async register(requestBody: RegisterCredentials): Promise<RegisterResponse> {
 		try {
+			// generating color for users without image
+			const color = generateNoImageColor()
+			// creating user with provided data
 			const user: User = await prisma.user.create({
 				data: {
 					email: requestBody.email,
@@ -40,34 +27,38 @@ export class RegisterService {
 					birthdayMonth: requestBody.birthdayMonth,
 					birthdayYear: parseInt(requestBody.birthdayYear),
 					userImage: requestBody.userImage,
-					password: requestBody.password,
+					password: await bcrypt.hash(requestBody.password, await bcrypt.genSalt(16)),
 					textStatus: '',
 					phoneNumber: null,
 					onlineStatus: 'online',
 					color,
 				},
 			})
+
+			// separating password from userData
+			const { password, ...userWithoutPassword } = user
 			if (user) {
 				return {
 					success: true,
 					message: 'Registration completed',
+					payload: {
+						user: userWithoutPassword,
+					},
 				}
 			}
 		} catch (e) {
 			if (e instanceof Prisma.PrismaClientKnownRequestError) {
+				// P2002 unique constraint failed
 				if (e.code === 'P2002') {
-					console.log(e)
-					console.log('User with this email already exists')
 					return {
 						success: false,
-						message: 'User with this email already exists',
+						message: 'User with this email or username already exists',
 					}
 				}
 			}
-			console.log('Registration failed', e)
 			return {
 				success: false,
-				message: 'Registration failed',
+				message: 'Server error',
 			}
 		}
 	}

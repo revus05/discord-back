@@ -1,6 +1,6 @@
 import { Controller, Post, Req } from '@nestjs/common'
 import { UserService } from './user.service'
-import getIdWithJwt from '../logic/getIdWithJwt'
+import getIdWithJwt from '../utils/getIdWithJwt'
 import { Request } from 'express'
 
 @Controller('/user')

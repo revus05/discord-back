@@ -1,7 +1,7 @@
 import { User } from '@prisma/client'
 import { GetUsersWithJwtErrorMessages, UserWithoutPassword } from '../types/userShowableData'
 import prisma from '../../prisma/client'
-import getIdWithJwt from '../logic/getIdWithJwt'
+import getIdWithJwt from '../utils/getIdWithJwt'
 import { ErrorMessage, SuccessMessage } from '../types/Messages'
 
 export type GetUserWithJwtResponse =

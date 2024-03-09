@@ -1,5 +1,5 @@
 import { Controller, Get, Post, Req } from '@nestjs/common'
-import getIdWithJwt from '../logic/getIdWithJwt'
+import getIdWithJwt from '../utils/getIdWithJwt'
 import { Request } from 'express'
 import { FriendsService } from './friends.service'
 

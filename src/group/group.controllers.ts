@@ -1,6 +1,6 @@
 import { Controller, Get, Post, Req } from '@nestjs/common'
 import { GetGroups, GroupService } from './group.service'
-import getIdWithJwt, { GetIdWithJwtResponse } from '../logic/getIdWithJwt'
+import getIdWithJwt, { GetIdWithJwtResponse } from '../utils/getIdWithJwt'
 import { Request } from 'express'
 
 @Controller('/group')

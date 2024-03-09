@@ -1,4 +1,4 @@
-export type RegisterRequestBody = {
+export type RegisterCredentials = {
 	email: string
 	displayName: string
 	username: string
@@ -9,4 +9,4 @@ export type RegisterRequestBody = {
 	password: string
 }
 
-export type RegisterUserErrorMessages = 'Registration failed' | 'User with this email already exists'
+export type RegisterUserErrorMessages = 'User with this email or username already exists'
