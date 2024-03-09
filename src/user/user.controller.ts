@@ -1,6 +1,5 @@
-import { Controller, Post, Req } from '@nestjs/common'
-import { UserService } from './user.service'
-import getIdWithJwt from '../utils/getIdWithJwt'
+import { Body, Controller, Post, Req } from '@nestjs/common'
+import { UpdateUsernameResponse, UpdateUserResponse, UserService } from './user.service'
 import { Request } from 'express'
 
 @Controller('/user')
@@ -8,24 +7,18 @@ export class userController {
 	constructor(private readonly userService: UserService) {}
 
 	@Post('updateDisplayName')
-	async updateUserDisplayName(@Req() req: Request) {
-		const { jwt } = req.cookies
-		const response = getIdWithJwt(jwt)
-		if (!response.success) {
-			return response
-		}
-		const id = response.payload.id
-		return await this.userService.updateUserDisplayName(id, req.body)
+	async updateUserDisplayName(
+		@Req() req: Request,
+		@Body() requestBody: { displayName: string },
+	): Promise<UpdateUserResponse> {
+		return await this.userService.updateUserDisplayName(req.cookies.jwt, requestBody)
 	}
 
 	@Post('updateUsername')
-	async updateUsername(@Req() req: Request) {
-		const { jwt } = req.cookies
-		const response = getIdWithJwt(jwt)
-		if (!response.success) {
-			return response
-		}
-		const id = response.payload.id
-		return await this.userService.updateUsername(id, req.body)
+	async updateUsername(
+		@Req() req: Request,
+		@Body() requestBody: { username: string; password: string },
+	): Promise<UpdateUsernameResponse> {
+		return await this.userService.updateUsername(req.cookies.jwt, requestBody)
 	}
 }

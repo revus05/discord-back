@@ -1,22 +1,33 @@
 import { Injectable } from '@nestjs/common'
 import { ErrorMessage, SuccessMessage } from '../types/messages'
-import { UpdateUserErrorMessages, UpdateUsernameErrorMessages } from '../types/userShowableData'
+import { UpdateUserErrorMessages, UpdateUsernameErrorMessages, UserWithoutPassword } from '../types/userShowableData'
 import { User } from '@prisma/client'
 import prisma from '../../prisma/client'
 import * as bcrypt from 'bcryptjs'
+import getIdWithJwt from '../utils/getIdWithJwt'
 
-type UpdateUserResponse =
-	| SuccessMessage<'DisplayName successfully updated', void>
+export type UpdateUserResponse =
+	| SuccessMessage<'DisplayName successfully updated', { user: UserWithoutPassword }>
 	| ErrorMessage<UpdateUserErrorMessages>
 
-type UpdateUsernameResponse =
-	| SuccessMessage<'Username successfully updated', void>
+export type UpdateUsernameResponse =
+	| SuccessMessage<'Username successfully updated', { user: UserWithoutPassword }>
 	| ErrorMessage<UpdateUsernameErrorMessages>
 
 @Injectable()
 export class UserService {
-	async updateUserDisplayName(id: number, { displayName }: { displayName: string }): Promise<UpdateUserResponse> {
+	async updateUserDisplayName(jwt: string, { displayName }: { displayName: string }): Promise<UpdateUserResponse> {
+		// getting id
+		const response = getIdWithJwt(jwt)
+		if (!response.success) {
+			return {
+				success: false,
+				message: 'Unauthorized',
+			}
+		}
+		const id = response.payload.id
 		try {
+			// updating displayName
 			const user: User = await prisma.user.update({
 				where: {
 					id,
@@ -31,9 +42,15 @@ export class UserService {
 					message: 'Unauthorized',
 				}
 			}
+
+			// separating password from user's data
+			const { password, ...userWithoutPassword } = user
 			return {
 				success: true,
 				message: 'DisplayName successfully updated',
+				payload: {
+					user: userWithoutPassword,
+				},
 			}
 		} catch (e) {
 			console.error(e)
@@ -45,10 +62,20 @@ export class UserService {
 	}
 
 	async updateUsername(
-		id: number,
+		jwt: string,
 		{ username, password }: { username: string; password: string },
 	): Promise<UpdateUsernameResponse> {
+		// getting id
+		const response = getIdWithJwt(jwt)
+		if (!response.success) {
+			return {
+				success: false,
+				message: 'Unauthorized',
+			}
+		}
+		const id = response.payload.id
 		try {
+			// getting user
 			const user: User = await prisma.user.findFirst({
 				where: {
 					id,
@@ -60,6 +87,8 @@ export class UserService {
 					message: 'Unauthorized',
 				}
 			}
+
+			// checking if provided password correct
 			const success = await bcrypt.compare(password, user.password)
 			if (!success) {
 				return {
@@ -67,6 +96,8 @@ export class UserService {
 					message: 'Wrong password',
 				}
 			}
+
+			// updating username
 			const updatedUser: User = await prisma.user.update({
 				where: {
 					id: user.id,
@@ -75,15 +106,21 @@ export class UserService {
 					username: username,
 				},
 			})
-			if (!updatedUser) {
+			if (updatedUser) {
+				// splitting password from user's data
+				const { password, ...updatedUserWithoutPassword } = updatedUser
 				return {
-					success: false,
-					message: 'Server error',
+					success: true,
+					message: 'Username successfully updated',
+					payload: {
+						user: updatedUserWithoutPassword,
+					},
 				}
 			}
+
 			return {
-				success: true,
-				message: 'Username successfully updated',
+				success: false,
+				message: 'Server error',
 			}
 		} catch (e) {
 			console.error(e)
