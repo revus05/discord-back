@@ -1,6 +1,6 @@
 import { User } from '@prisma/client'
 
-export type UserPublicData = Omit<User, 'password'>
+export type UserWithoutPassword = Omit<User, 'password'>
 
 export type UserShowableData = Omit<User, 'email' | 'password' | 'phoneNumber' | 'updatedAt'>
 

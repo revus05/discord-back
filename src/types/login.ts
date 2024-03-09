@@ -3,4 +3,4 @@ export type LoginRequestBody = {
 	password: string
 }
 
-export type GetUserWithCredentialsErrorMessages = 'Unauthorized'
+export type LoginWithCredentialsErrorMessages = 'Unauthorized'

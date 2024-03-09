@@ -1,10 +1,10 @@
 import { User } from '@prisma/client'
-import { GetUserWithIdErrorMessages, UserPublicData } from '../types/userShowableData'
+import { GetUserWithIdErrorMessages, UserWithoutPassword } from '../types/userShowableData'
 import prisma from '../../prisma/client'
 import { ErrorMessage, SuccessMessage } from '../types/Messages'
 
 export type GetUserWithIdResponse =
-	| SuccessMessage<'Successfully got user', { user: UserPublicData }>
+	| SuccessMessage<'Successfully got user', { user: UserWithoutPassword }>
 	| ErrorMessage<GetUserWithIdErrorMessages>
 
 const getUserWithId = async (id: number): Promise<GetUserWithIdResponse> => {
