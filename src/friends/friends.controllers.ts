@@ -1,5 +1,4 @@
 import { Controller, Get, Post, Req } from '@nestjs/common'
-import getIdWithJwt from '../utils/getIdWithJwt'
 import { Request } from 'express'
 import { FriendsService, GetFriendsResponse, RemoveFriendResponse } from './friends.service'
 
