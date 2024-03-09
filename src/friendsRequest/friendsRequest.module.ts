@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common'
 import { FriendsRequestService } from './friendsRequest.service'
-import { FriendsRequestController } from './friendsRequestController'
+import { FriendsRequestController } from './friendsRequest.controller'
 
 @Module({
 	providers: [FriendsRequestService],

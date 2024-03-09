@@ -18,3 +18,7 @@ export type UserIncludes = {
 	sentRequests?: FriendRequest[]
 	receivedRequests?: FriendRequest[]
 }
+
+export type UpdateUsernameRequestData = { username: string; password: string }
+
+export type UpdateDisplayName = { displayName: string }

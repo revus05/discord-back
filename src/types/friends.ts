@@ -25,3 +25,9 @@ export type FriendRequestsWithUsers = {
 }
 
 export type RemoveFriendErrorMessages = 'Unauthorized' | 'Friend not found'
+
+export type RemoveFriendRequestBody = { friendId: number }
+
+export type AcceptFriendRequestRequestBody = { requestId: number }
+
+export type SendFriendRequestRequestBody = { username: string }

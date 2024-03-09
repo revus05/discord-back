@@ -6,6 +6,7 @@ import {
 	SendFriendRequestResponse,
 } from './friendsRequest.service'
 import { Request } from 'express'
+import { AcceptFriendRequestRequestBody, SendFriendRequestRequestBody } from '../types/friends'
 
 @Controller('/friendsRequest')
 export class FriendsRequestController {
@@ -17,14 +18,17 @@ export class FriendsRequestController {
 	}
 
 	@Post('/accept')
-	async acceptRequest(@Req() req: Request, @Body() requestBody: { requestId: number }): Promise<AddFriendsResponse> {
+	async acceptRequest(
+		@Req() req: Request,
+		@Body() requestBody: AcceptFriendRequestRequestBody,
+	): Promise<AddFriendsResponse> {
 		return await this.FriendsRequestService.acceptRequest(req.cookies.jwt, requestBody)
 	}
 
 	@Post('/send')
 	async addFriend(
 		@Req() req: Request,
-		@Body() requestBody: { username: string },
+		@Body() requestBody: SendFriendRequestRequestBody,
 	): Promise<SendFriendRequestResponse> {
 		return await this.FriendsRequestService.sendRequest(req.cookies.jwt, requestBody)
 	}
