@@ -6,7 +6,6 @@ import { ErrorMessage, SuccessMessage } from '../../types/Messages'
 import { Injectable } from '@nestjs/common'
 import { User } from '@prisma/client'
 import * as JWT from 'jsonwebtoken'
-import { response } from 'express'
 
 export type LoginWithCredentials =
 	| SuccessMessage<'Authorized', { user: UserWithoutPassword; jwt: string }>
