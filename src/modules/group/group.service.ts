@@ -98,12 +98,14 @@ export class GroupService {
 		const groups: UserGroup[] = user.groups
 		let groupId: number
 		let group: Group
+
 		// checking if the group to add to exists
 		if (data.groupId) {
 			const foundGroup: UserGroup = groups.find((group: UserGroup) => {
 				return group.groupId === data.groupId
 			})
 			groupId = foundGroup.groupId
+
 			// if exists, getting it
 			group = await prisma.group.findFirst({
 				where: {

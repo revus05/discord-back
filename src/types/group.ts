@@ -12,8 +12,4 @@ export type GroupWithUsers = Group & {
 	users: UserGroup[]
 }
 
-export type UserGroupWithGroup = UserGroup & {
-	group: Group
-}
-
 export type AddUserToGroupRequestBody = { userId: number; groupId?: number }
