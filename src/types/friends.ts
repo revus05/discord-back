@@ -20,4 +20,4 @@ export type FriendRequestsWithUsers = {
 	toUser: UserShowableData
 }
 
-export type RemoveFriendErrorMessages = 'Unauthorized' | 'Friend user not found'
+export type RemoveFriendErrorMessages = 'Unauthorized' | 'Friend not found'

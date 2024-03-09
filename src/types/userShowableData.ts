@@ -1,4 +1,4 @@
-import { User } from '@prisma/client'
+import { FriendRequest, User, UserGroup } from '@prisma/client'
 
 export type UserWithoutPassword = Omit<User, 'password'>
 
@@ -6,8 +6,15 @@ export type UserShowableData = Omit<User, 'email' | 'password' | 'phoneNumber' |
 
 export type GetUsersWithJwtErrorMessages = 'Unauthorized'
 
-export type GetUserWithIdErrorMessages = 'No user found error'
+export type GetUserWithIdErrorMessages = 'Unauthorized'
 
 export type UpdateUserErrorMessages = 'Unauthorized'
 
 export type UpdateUsernameErrorMessages = 'Unauthorized' | 'Wrong password'
+
+export type UserIncludes = {
+	groups?: UserGroup[]
+	friends?: User[]
+	sentRequests?: FriendRequest[]
+	receivedRequests?: FriendRequest[]
+}
