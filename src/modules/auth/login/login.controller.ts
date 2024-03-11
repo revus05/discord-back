@@ -1,8 +1,8 @@
 import { Body, Controller, Get, Post, Req, Res } from '@nestjs/common'
-import { LoginWithCredentials, LoginService } from './login.service'
+import { LoginService } from './login.service'
 import { Request, Response } from 'express'
 import getUserWithJwt, { GetUserWithJwtResponse } from '../../../getUsers/getUserWithJwt'
-import { LoginCredentials } from '../../../types/login'
+import { LoginCredentials, loginWithCredentialsResponse } from '../../../types/login'
 
 @Controller('/login')
 export class LoginController {
@@ -17,12 +17,13 @@ export class LoginController {
 	async loginWithCredentials(
 		@Body() requestBody: LoginCredentials,
 		@Res({ passthrough: true }) res: Response,
-	): Promise<LoginWithCredentials> {
+	): Promise<loginWithCredentialsResponse> {
 		const response = await this.loginService.loginWithCredentials(requestBody)
 		if (!response.success) {
 			return response
 		}
 		res.cookie('jwt', response.payload.jwt)
-		return response
+		const { jwt, ...payloadWithoutJwt } = response.payload
+		return { ...response, payload: payloadWithoutJwt }
 	}
 }

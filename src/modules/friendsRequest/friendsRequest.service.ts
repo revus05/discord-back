@@ -4,6 +4,8 @@ import prisma from '../../../prisma/client'
 import {
 	AcceptFriendRequestRequestBody,
 	AddFriendErrorMessages,
+	DeleteFriendRequestErrorMessages,
+	DeleteFriendRequestRequestBody,
 	FriendRequestsWithUsers,
 	GetFriendsRequestsErrorMessages,
 	SendFriendRequestRequestBody,
@@ -23,9 +25,13 @@ export type SendFriendRequestResponse =
 	| SuccessMessage<'Friend request send', { friend: UserShowableData }>
 	| ErrorMessage<SendRequestErrorMessages>
 
-export type AddFriendsResponse =
-	| AddFriendErrorMessages
+export type AddFriendRequestResponse =
+	| ErrorMessage<AddFriendErrorMessages>
 	| SuccessMessage<'Successfully added friend', { friend: UserWithoutPassword }>
+
+export type DeleteFriendRequestResponse =
+	| SuccessMessage<'Request deleted successfully', { deletedRequest: FriendRequest }>
+	| ErrorMessage<DeleteFriendRequestErrorMessages>
 
 @Injectable()
 export class FriendsRequestService {
@@ -102,7 +108,7 @@ export class FriendsRequestService {
 		}
 	}
 
-	async acceptRequest(jwt: string, { requestId }: AcceptFriendRequestRequestBody): Promise<AddFriendsResponse> {
+	async acceptRequest(jwt: string, { requestId }: AcceptFriendRequestRequestBody): Promise<AddFriendRequestResponse> {
 		try {
 			// checking if the user exists
 			const response = await getUserWithJwt(jwt, { friends: true })
@@ -137,7 +143,7 @@ export class FriendsRequestService {
 		id: number,
 		user: UserWithoutPassword & UserIncludes,
 		{ friendId }: { friendId: number },
-	): Promise<AddFriendsResponse> {
+	): Promise<AddFriendRequestResponse> {
 		// checking if the friend in request is user
 		if (id === friendId) {
 			return {
@@ -244,6 +250,13 @@ export class FriendsRequestService {
 				}
 			}
 
+			if (friend.id === user.id) {
+				return {
+					success: false,
+					message: "You can't yourself to friends",
+				}
+			}
+
 			// checking if the request already exists
 			const alreadyExistingRequest: FriendRequest = await prisma.friendRequest.findFirst({
 				where: {
@@ -291,6 +304,65 @@ export class FriendsRequestService {
 				success: false,
 				message: 'Server error',
 			}
+		}
+	}
+
+	async deleteRequest(
+		jwt: string,
+		{ requestId }: DeleteFriendRequestRequestBody,
+	): Promise<DeleteFriendRequestResponse> {
+		// getting user
+		const response = await getUserWithJwt(jwt, { receivedRequests: true, sentRequests: true })
+		if (!response.success) {
+			return {
+				success: false,
+				message: 'Unauthorized',
+			}
+		}
+		// getting sent and received requests
+		const receivedRequests: FriendRequest[] = response.payload.user.receivedRequests
+		const sentRequests: FriendRequest[] = response.payload.user.sentRequests
+
+		// searching if user provided correct request
+		let isFoundFlag = false
+		receivedRequests.forEach((recReq: FriendRequest) => {
+			if (recReq.id === requestId) {
+				isFoundFlag = true
+			}
+		})
+		if (!isFoundFlag) {
+			sentRequests.forEach((sndReq: FriendRequest) => {
+				if (sndReq.id === requestId) {
+					isFoundFlag = true
+				}
+			})
+		}
+
+		if (!isFoundFlag) {
+			return {
+				success: false,
+				message: 'Wrong request id provided',
+			}
+		}
+
+		// deleting request
+		const deletedRequest: FriendRequest = await prisma.friendRequest.delete({
+			where: {
+				id: requestId,
+			},
+		})
+
+		if (!deletedRequest) {
+			return {
+				success: false,
+				message: 'Server error',
+			}
+		}
+
+		return {
+			success: true,
+			message: 'Request deleted successfully',
+			payload: { deletedRequest },
 		}
 	}
 }

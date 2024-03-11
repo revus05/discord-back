@@ -1,12 +1,17 @@
 import { Body, Controller, Get, Post, Req } from '@nestjs/common'
 import {
-	AddFriendsResponse,
+	AddFriendRequestResponse,
+	DeleteFriendRequestResponse,
 	FriendsRequestService,
 	GetFriendRequestsResponse,
 	SendFriendRequestResponse,
 } from './friendsRequest.service'
 import { Request } from 'express'
-import { AcceptFriendRequestRequestBody, SendFriendRequestRequestBody } from '../../types/friends'
+import {
+	AcceptFriendRequestRequestBody,
+	DeleteFriendRequestRequestBody,
+	SendFriendRequestRequestBody,
+} from '../../types/friends'
 
 @Controller('/friendsRequest')
 export class FriendsRequestController {
@@ -21,15 +26,23 @@ export class FriendsRequestController {
 	async acceptRequest(
 		@Req() req: Request,
 		@Body() requestBody: AcceptFriendRequestRequestBody,
-	): Promise<AddFriendsResponse> {
+	): Promise<AddFriendRequestResponse> {
 		return await this.FriendsRequestService.acceptRequest(req.cookies.jwt, requestBody)
 	}
 
 	@Post('/send')
-	async addFriend(
+	async addFriendRequest(
 		@Req() req: Request,
 		@Body() requestBody: SendFriendRequestRequestBody,
 	): Promise<SendFriendRequestResponse> {
 		return await this.FriendsRequestService.sendRequest(req.cookies.jwt, requestBody)
+	}
+
+	@Post('/delete')
+	async deleteFriendRequest(
+		@Req() req: Request,
+		@Body() requestBody: DeleteFriendRequestRequestBody,
+	): Promise<DeleteFriendRequestResponse> {
+		return await this.FriendsRequestService.deleteRequest(req.cookies.jwt, requestBody)
 	}
 }

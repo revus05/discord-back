@@ -49,6 +49,7 @@ export class LoginService {
 				payload: {
 					user: { ...userWithoutPassword },
 					jwt: JWT.sign({ id: user.id }, process.env.SECRET, { expiresIn: '30d' }),
+					//jwt: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNzEwMDgyNzc1LCJleHAiOjE3MTI2NzQ3NzV9.7zyGAPCvgBjZFTL9wKWx2MbHQxxfaxfROn4UnbvNHrw',
 				},
 			}
 		} catch (e) {
