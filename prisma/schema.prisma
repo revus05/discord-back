@@ -26,6 +26,8 @@ model User {
   friendsRelation  User[]          @relation("UserFriends")
   sentRequests     FriendRequest[] @relation("SentRequests")
   receivedRequests FriendRequest[] @relation("ReceivedRequests")
+  sentMessages     Message[]       @relation("Sender")
+  receivedMessages Message[]       @relation("Receiver")
 
   createdAt DateTime @default(dbgenerated("NOW()")) @db.Timestamptz(3)
   updatedAt DateTime @updatedAt @db.Timestamptz(3)
@@ -59,6 +61,17 @@ model FriendRequest {
   to        User                @relation("ReceivedRequests", fields: [toId], references: [id])
   toId      Int
   createdAt DateTime            @default(dbgenerated("NOW()")) @db.Timestamptz(3)
+}
+
+model Message {
+  id         Int      @id @default(autoincrement())
+  text       String
+  sender     User     @relation("Sender", fields: [senderId], references: [id])
+  senderId   Int
+  receiver   User     @relation("Receiver", fields: [receiverId], references: [id])
+  receiverId Int
+  createdAt  DateTime @default(dbgenerated("NOW()")) @db.Timestamptz(3)
+  updatedAt  DateTime @updatedAt @db.Timestamptz(3)
 }
 
 enum NoImageColors {
