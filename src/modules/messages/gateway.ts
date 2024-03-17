@@ -25,9 +25,7 @@ export class MyGateway implements OnModuleInit {
 		const msgService = new MessagesService()
 		const response = await msgService.sendMessage(message)
 		if (response.success) {
-			this.server.emit('sendMessageResponse', {
-				message: response.payload.message,
-			})
+			this.server.emit('sendMessageResponse', response)
 		}
 	}
 
@@ -36,7 +34,7 @@ export class MyGateway implements OnModuleInit {
 		const msgService = new MessagesService()
 		const response = await msgService.getMessages(jwt, userId)
 		if (response.success) {
-			this.server.emit('allMessages', response.payload.messages)
+			this.server.emit('allMessages', response)
 		}
 	}
 }
