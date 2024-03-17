@@ -11,7 +11,7 @@ import {
 	SendFriendRequestRequestBody,
 	SendRequestErrorMessages,
 } from '../../types/friends'
-import { ErrorMessage, SuccessMessage } from '../../types/messages'
+import { ErrorMessage, SuccessMessage } from '../../types/responseMessages'
 import getUserWithJwt from '../../getUsers/getUserWithJwt'
 import getUserShowableDataById from '../../getUsers/getUserShowableDataById'
 import getUserShowableData from '../../utils/getUserShowableData'

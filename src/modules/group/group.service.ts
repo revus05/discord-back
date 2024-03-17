@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common'
 import prisma from '../../../prisma/client'
 import { Group, UserGroup } from '@prisma/client'
-import { ErrorMessage, SuccessMessage } from '../../types/messages'
+import { ErrorMessage, SuccessMessage } from '../../types/responseMessages'
 import getUserWithJwt from '../../getUsers/getUserWithJwt'
 import {
 	AddUserToGroupErrorMessages,

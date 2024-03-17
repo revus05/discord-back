@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common'
-import { ErrorMessage, SuccessMessage } from '../../types/messages'
+import { ErrorMessage, SuccessMessage } from '../../types/responseMessages'
 import {
 	UpdateDisplayNameRequestData,
 	UpdateUserErrorMessages,

@@ -1,4 +1,4 @@
-import { ErrorMessage, SuccessMessage } from './messages'
+import { ErrorMessage, SuccessMessage } from './responseMessages'
 import { UserWithoutPassword } from './userShowableData'
 
 export type LoginCredentials = {

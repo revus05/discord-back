@@ -1,6 +1,6 @@
 import { JwtPayload } from 'jsonwebtoken'
 import * as JWT from 'jsonwebtoken'
-import { ErrorMessage, SuccessMessage } from '../types/messages'
+import { ErrorMessage, SuccessMessage } from '../types/responseMessages'
 
 export type GetIdWithJwtResponse = SuccessMessage<'Authorized', { id: number }> | ErrorMessage<'Unauthorized'>
 

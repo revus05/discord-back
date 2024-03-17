@@ -3,12 +3,7 @@ import { OnModuleInit } from '@nestjs/common'
 import * as console from 'console'
 import { Server } from 'socket.io'
 import { MessagesService } from './messages.service'
-
-export type MessageBody = {
-	text: string
-	jwt: string
-	receiverId: number
-}
+import { SendMessageBody } from '../../types/messages'
 
 @WebSocketGateway(8080, {
 	cors: {
@@ -26,18 +21,22 @@ export class MyGateway implements OnModuleInit {
 	}
 
 	@SubscribeMessage('sendMessage')
-	async onMessage(@MessageBody() message: any) {
+	async onMessage(@MessageBody() message: SendMessageBody) {
 		const msgService = new MessagesService()
-		const response = await msgService.addMessage(message)
-		this.server.emit('resp', {
-			message: response.payload.message,
-		})
+		const response = await msgService.sendMessage(message)
+		if (response.success) {
+			this.server.emit('sendMessageResponse', {
+				message: response.payload.message,
+			})
+		}
 	}
 
 	@SubscribeMessage('getMessages')
-	async getMessages() {
+	async getMessages(@MessageBody() { jwt, userId }: { jwt: string; userId: number }) {
 		const msgService = new MessagesService()
-		const response = await msgService.getMessages()
-		this.server.emit('allMessages', response.payload.messages)
+		const response = await msgService.getMessages(jwt, userId)
+		if (response.success) {
+			this.server.emit('allMessages', response.payload.messages)
+		}
 	}
 }
