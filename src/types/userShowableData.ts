@@ -22,3 +22,5 @@ export type UserIncludes = {
 export type UpdateUsernameRequestData = { username: string; password: string }
 
 export type UpdateDisplayNameRequestData = { displayName: string }
+
+export type UploadUserImageErrorMessages = 'Unauthorized' | 'Error parsing image' | 'Failed to update user'

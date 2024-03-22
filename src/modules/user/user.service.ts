@@ -5,12 +5,15 @@ import {
 	UpdateUserErrorMessages,
 	UpdateUsernameErrorMessages,
 	UpdateUsernameRequestData,
+	UploadUserImageErrorMessages,
 	UserWithoutPassword,
 } from '../../types/userShowableData'
 import { User } from '@prisma/client'
 import prisma from '../../../prisma/client'
 import * as bcrypt from 'bcryptjs'
 import getIdWithJwt from '../../utils/getIdWithJwt'
+import * as fs from 'fs'
+import * as path from 'path'
 
 export type UpdateUserResponse =
 	| SuccessMessage<'DisplayName successfully updated', { user: UserWithoutPassword }>
@@ -19,6 +22,10 @@ export type UpdateUserResponse =
 export type UpdateUsernameResponse =
 	| SuccessMessage<'Username successfully updated', { user: UserWithoutPassword }>
 	| ErrorMessage<UpdateUsernameErrorMessages>
+
+export type UploadUserImageResponse =
+	| SuccessMessage<'Successfully uploaded', { user: UserWithoutPassword }>
+	| ErrorMessage<UploadUserImageErrorMessages>
 
 @Injectable()
 export class UserService {
@@ -130,6 +137,66 @@ export class UserService {
 			return {
 				success: false,
 				message: 'Server error',
+			}
+		} catch (e) {
+			console.error(e)
+			return {
+				success: false,
+				message: 'Server error',
+			}
+		}
+	}
+
+	async uploadUserImage(jwt: string, file: Express.Multer.File): Promise<UploadUserImageResponse> {
+		// getting id
+		const response = getIdWithJwt(jwt)
+		if (!response.success) {
+			return {
+				success: false,
+				message: 'Unauthorized',
+			}
+		}
+		const id = response.payload.id
+		try {
+			// moving file (image) to `${process.cwd()}/public/avatars` folder
+			const targetPath = `${process.cwd()}/public/avatars`
+			if (!fs.existsSync(targetPath)) {
+				fs.mkdirSync(targetPath, { recursive: true })
+			}
+			fs.rename(file.path, path.join(targetPath, file.originalname), err => {
+				if (err) {
+					return {
+						success: false,
+						message: 'Error parsing image',
+					}
+				}
+			})
+
+			// updating userImage
+			const user: User = await prisma.user.update({
+				where: {
+					id,
+				},
+				data: {
+					userImage: `http://localhost:5555/${file.originalname}`,
+				},
+			})
+
+			if (!user) {
+				return {
+					success: false,
+					message: 'Failed to update user',
+				}
+			}
+
+			const { password, ...userWithoutPassword } = user
+
+			return {
+				success: true,
+				message: 'Successfully uploaded',
+				payload: {
+					user: userWithoutPassword,
+				},
 			}
 		} catch (e) {
 			console.error(e)

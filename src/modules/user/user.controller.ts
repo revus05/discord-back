@@ -1,7 +1,8 @@
-import { Body, Controller, Post, Req } from '@nestjs/common'
-import { UpdateUsernameResponse, UpdateUserResponse, UserService } from './user.service'
+import { Body, Controller, Post, Req, UploadedFile, UseInterceptors } from '@nestjs/common'
+import { UpdateUsernameResponse, UpdateUserResponse, UploadUserImageResponse, UserService } from './user.service'
 import { Request } from 'express'
 import { UpdateDisplayNameRequestData, UpdateUsernameRequestData } from '../../types/userShowableData'
+import { FileInterceptor } from '@nestjs/platform-express'
 
 @Controller('/user')
 export class userController {
@@ -21,5 +22,11 @@ export class userController {
 		@Body() requestBody: UpdateUsernameRequestData,
 	): Promise<UpdateUsernameResponse> {
 		return await this.userService.updateUsername(req.cookies.jwt, requestBody)
+	}
+
+	@Post('uploadUserImage')
+	@UseInterceptors(FileInterceptor('file'))
+	uploadUserImage(@Req() req: Request, @UploadedFile() file: Express.Multer.File): Promise<UploadUserImageResponse> {
+		return this.userService.uploadUserImage(req.cookies.jwt, file)
 	}
 }
