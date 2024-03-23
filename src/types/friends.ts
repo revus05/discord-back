@@ -1,39 +1,21 @@
-import { FriendRequest, User } from '@prisma/client'
-import { UserShowableData } from './users'
+import { User } from '@prisma/client'
+import { UserWithoutPassword } from './users'
+import { ErrorMessage, SuccessMessage } from './responseMessages'
 
-export type GetFriendsErrorMessages = 'Unauthorized'
-
-export type AddFriendErrorMessages =
-	| 'Unauthorized'
-	| 'User cant add himself to friends'
-	| 'User already your friend'
-	| 'Friend user not found'
+type GetFriendsErrorMessages = 'Unauthorized'
 
 export type PublicUser = Omit<User, 'email' | 'updatedAt' | 'password'>
 
-export type SendRequestErrorMessages =
-	| 'Unauthorized'
-	| "You're already friends with that user"
-	| 'Incorrect username'
-	| 'Request already sent to this user'
-	| "You can't yourself to friends"
-
-export type GetFriendsRequestsErrorMessages = 'Unauthorized'
-
-export type FriendRequestsWithUsers = {
-	friendRequest: FriendRequest
-	fromUser: UserShowableData
-	toUser: UserShowableData
-}
-
-export type RemoveFriendErrorMessages = 'Unauthorized' | 'Friend not found'
-
-export type RemoveFriendRequestBody = { friendId: number }
+type RemoveFriendErrorMessages = 'Unauthorized' | 'Friend not found'
 
 export type AcceptFriendRequestRequestBody = { requestId: number }
 
 export type SendFriendRequestRequestBody = { username: string }
 
-export type DeleteFriendRequestRequestBody = { requestId: number }
+export type GetFriendsResponse =
+	| ErrorMessage<GetFriendsErrorMessages>
+	| SuccessMessage<'Successfully got friends', { friends: PublicUser[] }>
 
-export type DeleteFriendRequestErrorMessages = 'Unauthorized' | 'Wrong request id provided'
+export type RemoveFriendResponse =
+	| SuccessMessage<'Successfully removed friend', { friend: UserWithoutPassword }>
+	| ErrorMessage<RemoveFriendErrorMessages>

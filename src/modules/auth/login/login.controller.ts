@@ -2,7 +2,7 @@ import { Body, Controller, Get, Post, Req, Res } from '@nestjs/common'
 import { LoginService } from './login.service'
 import { Request, Response } from 'express'
 import getUserWithJwt, { GetUserWithJwtResponse } from '../../../getUsers/getUserWithJwt'
-import { LoginCredentials, loginWithCredentialsResponse } from '../../../types/login'
+import { LoginCredentials, LoginWithCredentialsResponse } from '../../../types/login'
 
 @Controller('/login')
 export class LoginController {
@@ -17,7 +17,7 @@ export class LoginController {
 	async loginWithCredentials(
 		@Body() requestBody: LoginCredentials,
 		@Res({ passthrough: true }) res: Response,
-	): Promise<loginWithCredentialsResponse> {
+	): Promise<LoginWithCredentialsResponse> {
 		const response = await this.loginService.loginWithCredentials(requestBody)
 		if (!response.success) {
 			return response

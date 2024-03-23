@@ -1,7 +1,7 @@
-import { Body, Controller, Get, Post, Req } from '@nestjs/common'
+import { Body, Controller, Get, Param, Post, Req } from '@nestjs/common'
 import { Request } from 'express'
-import { FriendsService, GetFriendsResponse, RemoveFriendResponse } from './friends.service'
-import { RemoveFriendRequestBody } from '../../types/friends'
+import { GetFriendsResponse, RemoveFriendResponse } from '../../types/friends'
+import { FriendsService } from './friends.service'
 
 @Controller('/friends')
 export class FriendsControllers {
@@ -12,11 +12,8 @@ export class FriendsControllers {
 		return await this.friendsService.getFriends(req.cookies.jwt)
 	}
 
-	@Post('/remove')
-	async removeFriend(
-		@Req() req: Request,
-		@Body() requestBody: RemoveFriendRequestBody,
-	): Promise<RemoveFriendResponse> {
-		return await this.friendsService.removeFriend(req.cookies.jwt, requestBody)
+	@Post('/remove/:userId')
+	async removeFriend(@Req() req: Request, @Param('userId') userId: number): Promise<RemoveFriendResponse> {
+		return await this.friendsService.removeFriend(req.cookies.jwt, userId)
 	}
 }

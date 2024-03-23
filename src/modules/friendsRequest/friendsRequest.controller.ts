@@ -1,17 +1,13 @@
-import { Body, Controller, Get, Post, Req } from '@nestjs/common'
+import { Body, Controller, Delete, Get, Param, Post, Req } from '@nestjs/common'
+import { Request } from 'express'
+import { AcceptFriendRequestRequestBody, SendFriendRequestRequestBody } from '../../types/friends'
 import {
 	AddFriendRequestResponse,
 	DeleteFriendRequestResponse,
-	FriendsRequestService,
 	GetFriendRequestsResponse,
 	SendFriendRequestResponse,
-} from './friendsRequest.service'
-import { Request } from 'express'
-import {
-	AcceptFriendRequestRequestBody,
-	DeleteFriendRequestRequestBody,
-	SendFriendRequestRequestBody,
-} from '../../types/friends'
+} from '../../types/friendRequests'
+import { FriendsRequestService } from './friendsRequest.service'
 
 @Controller('/friendsRequest')
 export class FriendsRequestController {
@@ -38,11 +34,11 @@ export class FriendsRequestController {
 		return await this.FriendsRequestService.sendRequest(req.cookies.jwt, requestBody)
 	}
 
-	@Post('/delete')
+	@Delete('/delete/:requestId')
 	async deleteFriendRequest(
 		@Req() req: Request,
-		@Body() requestBody: DeleteFriendRequestRequestBody,
+		@Param('requestId') requestId: number,
 	): Promise<DeleteFriendRequestResponse> {
-		return await this.FriendsRequestService.deleteRequest(req.cookies.jwt, requestBody)
+		return await this.FriendsRequestService.deleteRequest(req.cookies.jwt, requestId)
 	}
 }

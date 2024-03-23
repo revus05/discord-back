@@ -1,19 +1,13 @@
 import * as bcrypt from 'bcryptjs'
 import prisma from '../../../../prisma/client'
-import { LoginWithCredentialsErrorMessages, LoginCredentials } from '../../../types/login'
-import { ErrorMessage, SuccessMessage } from '../../../types/responseMessages'
+import { LoginCredentials, LoginWithCredentialsResponse } from '../../../types/login'
 import { Injectable } from '@nestjs/common'
 import { User } from '@prisma/client'
 import * as JWT from 'jsonwebtoken'
-import { UserWithoutPassword } from '../../../types/users'
-
-export type LoginWithCredentials =
-	| SuccessMessage<'Authorized', { user: UserWithoutPassword; jwt: string }>
-	| ErrorMessage<LoginWithCredentialsErrorMessages>
 
 @Injectable()
 export class LoginService {
-	async loginWithCredentials(requestBody: LoginCredentials): Promise<LoginWithCredentials> {
+	async loginWithCredentials(requestBody: LoginCredentials): Promise<LoginWithCredentialsResponse> {
 		try {
 			// checking if the user with this email exists
 			const user: User = await prisma.user.findFirst({
@@ -49,7 +43,6 @@ export class LoginService {
 				payload: {
 					user: { ...userWithoutPassword },
 					jwt: JWT.sign({ id: user.id }, process.env.SECRET, { expiresIn: '30d' }),
-					//jwt: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNzEwMDgyNzc1LCJleHAiOjE3MTI2NzQ3NzV9.7zyGAPCvgBjZFTL9wKWx2MbHQxxfaxfROn4UnbvNHrw',
 				},
 			}
 		} catch (e) {

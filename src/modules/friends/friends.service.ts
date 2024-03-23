@@ -1,24 +1,9 @@
 import { Injectable } from '@nestjs/common'
 import prisma from '../../../prisma/client'
 import { User } from '@prisma/client'
-import { ErrorMessage, SuccessMessage } from '../../types/responseMessages'
-import {
-	GetFriendsErrorMessages,
-	PublicUser,
-	RemoveFriendErrorMessages,
-	RemoveFriendRequestBody,
-} from '../../types/friends'
 import getUserWithJwt, { GetUserWithJwtResponse } from '../../getUsers/getUserWithJwt'
 import getUserWithId from '../../getUsers/getUserWithId'
-import { UserWithoutPassword } from '../../types/users'
-
-export type GetFriendsResponse =
-	| ErrorMessage<GetFriendsErrorMessages>
-	| SuccessMessage<'Successfully got friends', { friends: PublicUser[] }>
-
-export type RemoveFriendResponse =
-	| SuccessMessage<'Successfully removed friend', { friend: UserWithoutPassword }>
-	| ErrorMessage<RemoveFriendErrorMessages>
+import { GetFriendsResponse, PublicUser, RemoveFriendResponse } from '../../types/friends'
 
 @Injectable()
 export class FriendsService {
@@ -56,7 +41,7 @@ export class FriendsService {
 		}
 	}
 
-	async removeFriend(jwt: string, { friendId }: RemoveFriendRequestBody): Promise<RemoveFriendResponse> {
+	async removeFriend(jwt: string, friendId: number): Promise<RemoveFriendResponse> {
 		try {
 			// checking that user exists
 			const response = await getUserWithJwt(jwt)

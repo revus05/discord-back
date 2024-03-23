@@ -6,8 +6,8 @@ export type LoginCredentials = {
 	password: string
 }
 
-export type LoginWithCredentialsErrorMessages = 'Unauthorized'
+type LoginWithCredentialsErrorMessages = 'Unauthorized'
 
-export type loginWithCredentialsResponse =
+export type LoginWithCredentialsResponse =
+	| SuccessMessage<'Authorized', { user: UserWithoutPassword; jwt?: string }>
 	| ErrorMessage<LoginWithCredentialsErrorMessages>
-	| SuccessMessage<'Authorized', { user: UserWithoutPassword }>

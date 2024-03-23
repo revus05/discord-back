@@ -1,37 +1,18 @@
 import { Injectable } from '@nestjs/common'
 import { FriendRequest, User } from '@prisma/client'
 import prisma from '../../../prisma/client'
-import {
-	AcceptFriendRequestRequestBody,
-	AddFriendErrorMessages,
-	DeleteFriendRequestErrorMessages,
-	DeleteFriendRequestRequestBody,
-	FriendRequestsWithUsers,
-	GetFriendsRequestsErrorMessages,
-	SendFriendRequestRequestBody,
-	SendRequestErrorMessages,
-} from '../../types/friends'
-import { ErrorMessage, SuccessMessage } from '../../types/responseMessages'
 import getUserWithJwt from '../../getUsers/getUserWithJwt'
 import getUserShowableDataById from '../../getUsers/getUserShowableDataById'
 import getUserShowableData from '../../utils/getUserShowableData'
-import { UserIncludes, UserShowableData, UserWithoutPassword } from '../../types/users'
-
-export type GetFriendRequestsResponse =
-	| SuccessMessage<'Successfully got friend requests', { friendRequestsWithUsers: FriendRequestsWithUsers[] }>
-	| ErrorMessage<GetFriendsRequestsErrorMessages>
-
-export type SendFriendRequestResponse =
-	| SuccessMessage<'Friend request send', { friend: UserShowableData }>
-	| ErrorMessage<SendRequestErrorMessages>
-
-export type AddFriendRequestResponse =
-	| ErrorMessage<AddFriendErrorMessages>
-	| SuccessMessage<'Successfully added friend', { friend: UserWithoutPassword }>
-
-export type DeleteFriendRequestResponse =
-	| SuccessMessage<'Request deleted successfully', { deletedRequest: FriendRequest }>
-	| ErrorMessage<DeleteFriendRequestErrorMessages>
+import { UserIncludes, UserWithoutPassword } from '../../types/users'
+import {
+	AddFriendRequestResponse,
+	DeleteFriendRequestResponse,
+	FriendRequestsWithUsers,
+	GetFriendRequestsResponse,
+	SendFriendRequestResponse,
+} from '../../types/friendRequests'
+import { AcceptFriendRequestRequestBody, SendFriendRequestRequestBody } from '../../types/friends'
 
 @Injectable()
 export class FriendsRequestService {
@@ -307,10 +288,7 @@ export class FriendsRequestService {
 		}
 	}
 
-	async deleteRequest(
-		jwt: string,
-		{ requestId }: DeleteFriendRequestRequestBody,
-	): Promise<DeleteFriendRequestResponse> {
+	async deleteRequest(jwt: string, requestId: number): Promise<DeleteFriendRequestResponse> {
 		// getting user
 		const response = await getUserWithJwt(jwt, { receivedRequests: true, sentRequests: true })
 		if (!response.success) {

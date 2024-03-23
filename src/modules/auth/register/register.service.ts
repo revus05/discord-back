@@ -1,15 +1,9 @@
 import { Injectable } from '@nestjs/common'
 import { Prisma, User } from '@prisma/client'
 import prisma from '../../../../prisma/client'
-import { RegisterCredentials, RegisterUserErrorMessages } from '../../../types/register'
-import { ErrorMessage, SuccessMessage } from '../../../types/responseMessages'
 import * as bcrypt from 'bcryptjs'
 import generateNoImageColor from '../../../utils/generateNoImageColor'
-import { UserWithoutPassword } from '../../../types/users'
-
-export type RegisterResponse =
-	| SuccessMessage<'Registration completed', { user: UserWithoutPassword }>
-	| ErrorMessage<RegisterUserErrorMessages>
+import { RegisterCredentials, RegisterResponse } from '../../../types/register'
 
 @Injectable()
 export class RegisterService {
