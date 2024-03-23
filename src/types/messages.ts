@@ -1,9 +1,12 @@
 export type SendMessageBody = {
 	text: string
 	jwt: string
-	receiverId: number
+	receiverId?: number
+	groupId?: string
 }
 
 export type SendMessageErrorMessages = 'Unauthorized'
 
-export type GetMessagesErrorMessages = 'Unauthorized'
+export type GetUserMessagesErrorMessages = 'Unauthorized'
+
+export type GetGroupMessagesErrorMessages = 'Unauthorized'

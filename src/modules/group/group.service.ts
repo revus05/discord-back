@@ -1,28 +1,17 @@
-import { Injectable } from '@nestjs/common'
-import prisma from '../../../prisma/client'
 import { Group, UserGroup } from '@prisma/client'
-import { ErrorMessage, SuccessMessage } from '../../types/responseMessages'
+import { Injectable } from '@nestjs/common'
 import getUserWithJwt from '../../getUsers/getUserWithJwt'
+import prisma from '../../../prisma/client'
+import generateNoImageColor from '../../utils/generateNoImageColor'
 import {
-	AddUserToGroupErrorMessages,
 	AddUserToGroupRequestBody,
-	GetGroupsErrorMessages,
+	AddUserToGroupResponse,
+	CreateGroupResponse,
+	GetGroupsResponse,
 	GroupWithMembers,
 	GroupWithUsers,
+	LeaveFromGroupResponse,
 } from '../../types/group'
-import generateNoImageColor from '../../utils/generateNoImageColor'
-
-export type GetGroupsResponse =
-	| SuccessMessage<'Successfully got groups', { groups: GroupWithMembers[] }>
-	| ErrorMessage<GetGroupsErrorMessages>
-
-type CreateGroupResponse =
-	| SuccessMessage<'Group created successfully', { group: Group; link: UserGroup }>
-	| ErrorMessage<''>
-
-type AddUserToGroupResponse =
-	| SuccessMessage<'User successfully added', { group: Group }>
-	| ErrorMessage<AddUserToGroupErrorMessages>
 
 @Injectable()
 export class GroupService {
@@ -96,7 +85,7 @@ export class GroupService {
 		const id = user.id
 		console.log(user.groups)
 		const groups: UserGroup[] = user.groups
-		let groupId: number
+		let groupId: string
 		let group: Group
 
 		// checking if the group to add to exists
@@ -156,6 +145,7 @@ export class GroupService {
 			// creating group
 			const group: Group = await prisma.group.create({
 				data: {
+					id: crypto.randomUUID(),
 					color: generateNoImageColor(),
 					name: name + ` ${addedUser.displayName}`,
 					image: null,
@@ -175,6 +165,74 @@ export class GroupService {
 				payload: {
 					group,
 					link,
+				},
+			}
+		} catch (e) {
+			console.log(e)
+			return {
+				success: false,
+				message: 'Server error',
+			}
+		}
+	}
+
+	async leaveFromGroup(jwt: string, groupId: string): Promise<LeaveFromGroupResponse> {
+		const response = await getUserWithJwt(jwt, {
+			groups: true,
+		})
+		if (!response.success) {
+			return {
+				success: false,
+				message: 'Unauthorized',
+			}
+		}
+		const id = response.payload.user.id
+		try {
+			// check if the group exists
+			const group: Group & { users: UserGroup[] } = await prisma.group.findFirst({
+				where: {
+					id: groupId,
+				},
+				include: {
+					users: true,
+				},
+			})
+
+			if (!group) {
+				return {
+					success: false,
+					message: 'No group found for this id',
+				}
+			}
+
+			// check if the user exists in this group
+			const user: UserGroup | undefined = group.users.find((userGroup: UserGroup) => userGroup.userId === id)
+
+			if (!user) {
+				return {
+					success: false,
+					message: 'No user with this id found in this group',
+				}
+			}
+
+			// delete record about user being in the group
+			const updatedGroup: UserGroup & { group: Group } = await prisma.userGroup.delete({
+				where: {
+					userId_groupId: {
+						userId: id,
+						groupId: groupId,
+					},
+				},
+				include: {
+					group: true,
+				},
+			})
+
+			return {
+				success: true,
+				message: 'Successfully left group',
+				payload: {
+					group: updatedGroup.group,
 				},
 			}
 		} catch (e) {

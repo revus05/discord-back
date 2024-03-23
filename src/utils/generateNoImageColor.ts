@@ -1,7 +1,7 @@
 import { NoImageColors } from '@prisma/client'
 
 const generateNoImageColor = (): NoImageColors => {
-	const random = Math.floor(Math.random() * 5)
+	const random = Math.floor(Math.random() * 9)
 	switch (random) {
 		case 0:
 			return 'orange'
@@ -13,6 +13,14 @@ const generateNoImageColor = (): NoImageColors => {
 			return 'blue'
 		case 4:
 			return 'yellow'
+		case 5:
+			return 'purple'
+		case 6:
+			return 'lime'
+		case 7:
+			return 'pink'
+		case 8:
+			return 'crimson'
 		default:
 			return 'orange'
 	}

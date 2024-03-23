@@ -1,7 +1,12 @@
-import { Body, Controller, Get, Post, Req } from '@nestjs/common'
-import { GetGroupsResponse, GroupService } from './group.service'
+import { Body, Controller, Delete, Get, Param, Post, Req } from '@nestjs/common'
+import { GroupService } from './group.service'
 import { Request } from 'express'
-import { AddUserToGroupRequestBody } from '../../types/group'
+import {
+	AddUserToGroupRequestBody,
+	AddUserToGroupResponse,
+	GetGroupsResponse,
+	LeaveFromGroupResponse,
+} from '../../types/group'
 
 @Controller('/group')
 export class GroupControllers {
@@ -13,7 +18,15 @@ export class GroupControllers {
 	}
 
 	@Post('/addUser')
-	async addUserToGroup(@Req() req: Request, @Body() requestBody: AddUserToGroupRequestBody) {
+	async addUserToGroup(
+		@Req() req: Request,
+		@Body() requestBody: AddUserToGroupRequestBody,
+	): Promise<AddUserToGroupResponse> {
 		return await this.groupService.addUserToGroup(req.cookies.jwt, requestBody)
+	}
+
+	@Delete('/leave/:groupId')
+	async leaveFromGroup(@Param('groupId') groupId: string, @Req() req: Request): Promise<LeaveFromGroupResponse> {
+		return await this.groupService.leaveFromGroup(req.cookies.jwt, groupId)
 	}
 }

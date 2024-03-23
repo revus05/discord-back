@@ -2,20 +2,30 @@ import { Injectable } from '@nestjs/common'
 import prisma from '../../../prisma/client'
 import getIdWithJwt from '../../utils/getIdWithJwt'
 import { Message } from '@prisma/client'
-import { GetMessagesErrorMessages, SendMessageBody, SendMessageErrorMessages } from '../../types/messages'
+import {
+	GetGroupMessagesErrorMessages,
+	GetUserMessagesErrorMessages,
+	SendMessageBody,
+	SendMessageErrorMessages,
+} from '../../types/messages'
 import { ErrorMessage, SuccessMessage } from '../../types/responseMessages'
 
 type SendMessageResponse =
 	| SuccessMessage<'Message sent successfully', { message: Message }>
 	| ErrorMessage<SendMessageErrorMessages>
 
-type GetMessagesResponse =
+type GetUserMessagesResponse =
 	| SuccessMessage<'Successfully got message', { messages: Message[] }>
-	| ErrorMessage<GetMessagesErrorMessages>
+	| ErrorMessage<GetUserMessagesErrorMessages>
+
+type GetGroupMessagesResponse =
+	| SuccessMessage<'Successfully got group messages', { messages: Message[] }>
+	| ErrorMessage<GetGroupMessagesErrorMessages>
 
 @Injectable()
 export class MessagesService {
 	async sendMessage(newMessage: SendMessageBody): Promise<SendMessageResponse> {
+		console.log(newMessage)
 		const response = getIdWithJwt(newMessage.jwt)
 		if (!response.success) {
 			return {
@@ -25,21 +35,40 @@ export class MessagesService {
 		}
 		const id = response.payload.id
 		try {
-			const message: Message = await prisma.message.create({
-				data: {
-					text: newMessage.text,
-					sender: {
-						connect: {
-							id: id,
+			let message: Message
+			if (newMessage.receiverId) {
+				message = await prisma.message.create({
+					data: {
+						text: newMessage.text,
+						sender: {
+							connect: {
+								id: id,
+							},
+						},
+						receiver: {
+							connect: {
+								id: +newMessage.receiverId,
+							},
 						},
 					},
-					receiver: {
-						connect: {
-							id: +newMessage.receiverId,
+				})
+			} else {
+				message = await prisma.message.create({
+					data: {
+						text: newMessage.text,
+						sender: {
+							connect: {
+								id: id,
+							},
+						},
+						group: {
+							connect: {
+								id: newMessage.groupId,
+							},
 						},
 					},
-				},
-			})
+				})
+			}
 			if (!message) {
 				return {
 					success: false,
@@ -62,7 +91,7 @@ export class MessagesService {
 		}
 	}
 
-	async getMessages(jwt: string, userId: number): Promise<GetMessagesResponse> {
+	async getUserMessages(jwt: string, userId: number): Promise<GetUserMessagesResponse> {
 		const response = getIdWithJwt(jwt)
 		if (!response.success) {
 			return {
@@ -95,6 +124,50 @@ export class MessagesService {
 			}
 		} catch (e) {
 			console.log(e)
+			return {
+				success: false,
+				message: 'Server error',
+			}
+		}
+	}
+
+	async getGroupMessages(jwt: string, groupId: string): Promise<GetGroupMessagesResponse> {
+		const response = getIdWithJwt(jwt)
+		if (!response.success) {
+			return {
+				success: false,
+				message: 'Unauthorized',
+			}
+		}
+		//const id = response.payload.id
+		try {
+			const group = await prisma.group.findFirst({
+				where: {
+					id: groupId,
+				},
+				select: {
+					messages: true,
+					users: {
+						include: {
+							user: true,
+						},
+					},
+				},
+			})
+			console.log(group)
+			return {
+				success: true,
+				message: 'Successfully got group messages',
+				payload: {
+					messages: group.messages,
+				},
+			}
+		} catch (e) {
+			console.log(e)
+			return {
+				success: false,
+				message: 'Server error',
+			}
 		}
 	}
 }
