@@ -2,6 +2,8 @@ import { Injectable } from '@nestjs/common'
 import { ErrorMessage, SuccessMessage } from '../../types/responseMessages'
 import {
 	UpdateDisplayNameRequestData,
+	UpdatePhoneNumberErrorMessages,
+	UpdatePhoneNumberRequestData,
 	UpdateUserErrorMessages,
 	UpdateUsernameErrorMessages,
 	UpdateUsernameRequestData,
@@ -26,6 +28,10 @@ export type UpdateUsernameResponse =
 export type UploadUserImageResponse =
 	| SuccessMessage<'Successfully uploaded', { user: UserWithoutPassword }>
 	| ErrorMessage<UploadUserImageErrorMessages>
+
+export type UpdatePhoneNumberResponse =
+	| SuccessMessage<'Successfully updated phone number', { user: UserWithoutPassword }>
+	| ErrorMessage<UpdatePhoneNumberErrorMessages>
 
 @Injectable()
 export class UserService {
@@ -194,6 +200,50 @@ export class UserService {
 			return {
 				success: true,
 				message: 'Successfully uploaded',
+				payload: {
+					user: userWithoutPassword,
+				},
+			}
+		} catch (e) {
+			console.error(e)
+			return {
+				success: false,
+				message: 'Server error',
+			}
+		}
+	}
+
+	async updatePhoneNumber(jwt: string, data: UpdatePhoneNumberRequestData): Promise<UpdatePhoneNumberResponse> {
+		// getting id
+		const response = getIdWithJwt(jwt)
+		if (!response.success) {
+			return {
+				success: false,
+				message: 'Unauthorized',
+			}
+		}
+		const id = response.payload.id
+		try {
+			const user: User = await prisma.user.update({
+				where: {
+					id,
+				},
+				data: {
+					phoneCode: data.code,
+					phoneNumber: data.phoneNumber,
+				},
+			})
+
+			if (!user) {
+				return {
+					success: false,
+					message: 'Error updating phone number',
+				}
+			}
+			const { password, ...userWithoutPassword } = user
+			return {
+				success: true,
+				message: 'Successfully updated phone number',
 				payload: {
 					user: userWithoutPassword,
 				},

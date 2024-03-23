@@ -21,6 +21,7 @@ model User {
   color            NoImageColors
   textStatus       String
   onlineStatus     OnlineSatus
+  phoneCode        Int?
   phoneNumber      String?
   friends          User[]          @relation("UserFriends")
   friendsRelation  User[]          @relation("UserFriends")
