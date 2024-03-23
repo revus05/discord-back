@@ -1,5 +1,5 @@
 import { FriendRequest, User } from '@prisma/client'
-import { UserShowableData } from './userShowableData'
+import { UserShowableData } from './users'
 
 export type GetFriendsErrorMessages = 'Unauthorized'
 

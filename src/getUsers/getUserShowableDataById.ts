@@ -1,5 +1,5 @@
-import { UserShowableData } from '../types/userShowableData'
 import prisma from '../../prisma/client'
+import { UserShowableData } from '../types/users'
 
 const getUserShowableDataById = async (id: number): Promise<UserShowableData> => {
 	return prisma.user.findFirst({

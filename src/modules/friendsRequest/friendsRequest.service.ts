@@ -15,7 +15,7 @@ import { ErrorMessage, SuccessMessage } from '../../types/responseMessages'
 import getUserWithJwt from '../../getUsers/getUserWithJwt'
 import getUserShowableDataById from '../../getUsers/getUserShowableDataById'
 import getUserShowableData from '../../utils/getUserShowableData'
-import { UserIncludes, UserShowableData, UserWithoutPassword } from '../../types/userShowableData'
+import { UserIncludes, UserShowableData, UserWithoutPassword } from '../../types/users'
 
 export type GetFriendRequestsResponse =
 	| SuccessMessage<'Successfully got friend requests', { friendRequestsWithUsers: FriendRequestsWithUsers[] }>

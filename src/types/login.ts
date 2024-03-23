@@ -1,5 +1,5 @@
 import { ErrorMessage, SuccessMessage } from './responseMessages'
-import { UserWithoutPassword } from './userShowableData'
+import { UserWithoutPassword } from './users'
 
 export type LoginCredentials = {
 	email: string

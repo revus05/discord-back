@@ -5,7 +5,7 @@ import { RegisterCredentials, RegisterUserErrorMessages } from '../../../types/r
 import { ErrorMessage, SuccessMessage } from '../../../types/responseMessages'
 import * as bcrypt from 'bcryptjs'
 import generateNoImageColor from '../../../utils/generateNoImageColor'
-import { UserWithoutPassword } from '../../../types/userShowableData'
+import { UserWithoutPassword } from '../../../types/users'
 
 export type RegisterResponse =
 	| SuccessMessage<'Registration completed', { user: UserWithoutPassword }>

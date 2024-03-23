@@ -10,7 +10,7 @@ import {
 } from '../../types/friends'
 import getUserWithJwt, { GetUserWithJwtResponse } from '../../getUsers/getUserWithJwt'
 import getUserWithId from '../../getUsers/getUserWithId'
-import { UserWithoutPassword } from '../../types/userShowableData'
+import { UserWithoutPassword } from '../../types/users'
 
 export type GetFriendsResponse =
 	| ErrorMessage<GetFriendsErrorMessages>

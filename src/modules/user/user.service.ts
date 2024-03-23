@@ -1,37 +1,20 @@
 import { Injectable } from '@nestjs/common'
-import { ErrorMessage, SuccessMessage } from '../../types/responseMessages'
-import {
-	UpdateDisplayNameRequestData,
-	UpdatePhoneNumberErrorMessages,
-	UpdatePhoneNumberRequestData,
-	UpdateUserErrorMessages,
-	UpdateUsernameErrorMessages,
-	UpdateUsernameRequestData,
-	UploadUserImageErrorMessages,
-	UserWithoutPassword,
-} from '../../types/userShowableData'
+
 import { User } from '@prisma/client'
 import prisma from '../../../prisma/client'
 import * as bcrypt from 'bcryptjs'
 import getIdWithJwt from '../../utils/getIdWithJwt'
 import * as fs from 'fs'
 import * as path from 'path'
-
-export type UpdateUserResponse =
-	| SuccessMessage<'DisplayName successfully updated', { user: UserWithoutPassword }>
-	| ErrorMessage<UpdateUserErrorMessages>
-
-export type UpdateUsernameResponse =
-	| SuccessMessage<'Username successfully updated', { user: UserWithoutPassword }>
-	| ErrorMessage<UpdateUsernameErrorMessages>
-
-export type UploadUserImageResponse =
-	| SuccessMessage<'Successfully uploaded', { user: UserWithoutPassword }>
-	| ErrorMessage<UploadUserImageErrorMessages>
-
-export type UpdatePhoneNumberResponse =
-	| SuccessMessage<'Successfully updated phone number', { user: UserWithoutPassword }>
-	| ErrorMessage<UpdatePhoneNumberErrorMessages>
+import {
+	UpdateDisplayNameRequestData,
+	UpdatePhoneNumberRequestData,
+	UpdatePhoneNumberResponse,
+	UpdateUsernameRequestData,
+	UpdateUsernameResponse,
+	UpdateUserResponse,
+	UploadUserImageResponse,
+} from '../../types/users'
 
 @Injectable()
 export class UserService {

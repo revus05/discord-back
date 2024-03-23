@@ -1,4 +1,4 @@
-import { UserShowableData, UserWithoutPassword } from '../types/userShowableData'
+import { UserShowableData, UserWithoutPassword } from '../types/users'
 
 const getUserShowableData = (user: UserWithoutPassword): UserShowableData => {
 	const { email, phoneNumber, updatedAt, ...userShowableData } = user

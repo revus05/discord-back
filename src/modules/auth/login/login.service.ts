@@ -1,11 +1,11 @@
 import * as bcrypt from 'bcryptjs'
 import prisma from '../../../../prisma/client'
-import { UserWithoutPassword } from '../../../types/userShowableData'
 import { LoginWithCredentialsErrorMessages, LoginCredentials } from '../../../types/login'
 import { ErrorMessage, SuccessMessage } from '../../../types/responseMessages'
 import { Injectable } from '@nestjs/common'
 import { User } from '@prisma/client'
 import * as JWT from 'jsonwebtoken'
+import { UserWithoutPassword } from '../../../types/users'
 
 export type LoginWithCredentials =
 	| SuccessMessage<'Authorized', { user: UserWithoutPassword; jwt: string }>

@@ -1,18 +1,17 @@
 import { Body, Controller, Post, Req, UploadedFile, UseInterceptors } from '@nestjs/common'
-import {
-	UpdatePhoneNumberResponse,
-	UpdateUsernameResponse,
-	UpdateUserResponse,
-	UploadUserImageResponse,
-	UserService,
-} from './user.service'
+
 import { Request } from 'express'
+import { FileInterceptor } from '@nestjs/platform-express'
+import { UserService } from './user.service'
 import {
 	UpdateDisplayNameRequestData,
 	UpdatePhoneNumberRequestData,
+	UpdatePhoneNumberResponse,
 	UpdateUsernameRequestData,
-} from '../../types/userShowableData'
-import { FileInterceptor } from '@nestjs/platform-express'
+	UpdateUsernameResponse,
+	UpdateUserResponse,
+	UploadUserImageResponse,
+} from '../../types/users'
 
 @Controller('/user')
 export class userController {
