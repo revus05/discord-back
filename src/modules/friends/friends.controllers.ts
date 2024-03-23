@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, Req } from '@nestjs/common'
+import { Controller, Get, Param, Post, Req } from '@nestjs/common'
 import { Request } from 'express'
 import { GetFriendsResponse, RemoveFriendResponse } from '../../types/friends'
 import { FriendsService } from './friends.service'
