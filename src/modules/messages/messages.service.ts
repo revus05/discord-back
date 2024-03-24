@@ -3,29 +3,15 @@ import prisma from '../../../prisma/client'
 import getIdWithJwt from '../../utils/getIdWithJwt'
 import { Message } from '@prisma/client'
 import {
-	GetGroupMessagesErrorMessages,
-	GetUserMessagesErrorMessages,
+	GetGroupMessagesResponse,
+	GetUserMessagesResponse,
 	SendMessageBody,
-	SendMessageErrorMessages,
+	SendMessageResponse,
 } from '../../types/messages'
-import { ErrorMessage, SuccessMessage } from '../../types/responseMessages'
-
-type SendMessageResponse =
-	| SuccessMessage<'Message sent successfully', { message: Message }>
-	| ErrorMessage<SendMessageErrorMessages>
-
-type GetUserMessagesResponse =
-	| SuccessMessage<'Successfully got message', { messages: Message[] }>
-	| ErrorMessage<GetUserMessagesErrorMessages>
-
-type GetGroupMessagesResponse =
-	| SuccessMessage<'Successfully got group messages', { messages: Message[] }>
-	| ErrorMessage<GetGroupMessagesErrorMessages>
 
 @Injectable()
 export class MessagesService {
 	async sendMessage(newMessage: SendMessageBody): Promise<SendMessageResponse> {
-		console.log(newMessage)
 		const response = getIdWithJwt(newMessage.jwt)
 		if (!response.success) {
 			return {

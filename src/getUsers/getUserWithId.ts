@@ -16,7 +16,6 @@ const getUserWithId = async (id: number, include?: Prisma.UserInclude): Promise<
 			},
 			include,
 		})
-		console.log(user)
 		// checking if the user exists
 		if (!user) {
 			return {

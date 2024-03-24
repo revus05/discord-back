@@ -1,3 +1,6 @@
+import { ErrorMessage, SuccessMessage } from './responseMessages'
+import { Message } from '@prisma/client'
+
 export type SendMessageBody = {
 	text: string
 	jwt: string
@@ -5,8 +8,20 @@ export type SendMessageBody = {
 	groupId?: string
 }
 
-export type SendMessageErrorMessages = 'Unauthorized'
+type SendMessageErrorMessages = 'Unauthorized'
 
-export type GetUserMessagesErrorMessages = 'Unauthorized'
+type GetUserMessagesErrorMessages = 'Unauthorized'
 
-export type GetGroupMessagesErrorMessages = 'Unauthorized'
+type GetGroupMessagesErrorMessages = 'Unauthorized'
+
+export type SendMessageResponse =
+	| SuccessMessage<'Message sent successfully', { message: Message }>
+	| ErrorMessage<SendMessageErrorMessages>
+
+export type GetUserMessagesResponse =
+	| SuccessMessage<'Successfully got message', { messages: Message[] }>
+	| ErrorMessage<GetUserMessagesErrorMessages>
+
+export type GetGroupMessagesResponse =
+	| SuccessMessage<'Successfully got group messages', { messages: Message[] }>
+	| ErrorMessage<GetGroupMessagesErrorMessages>
