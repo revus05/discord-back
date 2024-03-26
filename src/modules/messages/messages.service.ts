@@ -1,13 +1,8 @@
 import { Injectable } from '@nestjs/common'
 import prisma from '../../../prisma/client'
 import getIdWithJwt from '../../utils/getIdWithJwt'
-import { Message } from '@prisma/client'
-import {
-	GetGroupMessagesResponse,
-	GetUserMessagesResponse,
-	SendMessageBody,
-	SendMessageResponse,
-} from '../../types/messages'
+import { Chat, Message, UserChat } from '@prisma/client'
+import { GetUserMessagesResponse, SendMessageBody, SendMessageResponse } from '../../types/messages'
 
 @Injectable()
 export class MessagesService {
@@ -21,40 +16,14 @@ export class MessagesService {
 		}
 		const id = response.payload.id
 		try {
-			let message: Message
-			if (newMessage.receiverId) {
-				message = await prisma.message.create({
-					data: {
-						text: newMessage.text,
-						sender: {
-							connect: {
-								id: id,
-							},
-						},
-						receiver: {
-							connect: {
-								id: +newMessage.receiverId,
-							},
-						},
-					},
-				})
-			} else {
-				message = await prisma.message.create({
-					data: {
-						text: newMessage.text,
-						sender: {
-							connect: {
-								id: id,
-							},
-						},
-						group: {
-							connect: {
-								id: newMessage.groupId,
-							},
-						},
-					},
-				})
-			}
+			let message: Message = await prisma.message.create({
+				data: {
+					text: newMessage.text,
+					senderId: id,
+					chatId: newMessage.chatId,
+				},
+			})
+
 			if (!message) {
 				return {
 					success: false,
@@ -77,7 +46,7 @@ export class MessagesService {
 		}
 	}
 
-	async getUserMessages(jwt: string, userId: number): Promise<GetUserMessagesResponse> {
+	async getUserMessages(jwt: string, chatId: number): Promise<GetUserMessagesResponse> {
 		const response = getIdWithJwt(jwt)
 		if (!response.success) {
 			return {
@@ -87,18 +56,25 @@ export class MessagesService {
 		}
 		const id = response.payload.id
 		try {
+			const chat: Chat & { userChat: UserChat[] } = await prisma.chat.findFirst({
+				where: {
+					id: chatId,
+				},
+				include: {
+					userChat: true,
+				},
+			})
+			const isUser: UserChat | undefined = chat.userChat?.find((userChat: UserChat) => userChat.userId === id)
+			if (!isUser) {
+				return {
+					success: false,
+					message: 'Wrong chat',
+				}
+			}
+
 			const messages: Message[] = await prisma.message.findMany({
 				where: {
-					OR: [
-						{
-							senderId: userId,
-							receiverId: id,
-						},
-						{
-							senderId: id,
-							receiverId: userId,
-						},
-					],
+					chatId,
 				},
 			})
 			return {
@@ -117,7 +93,7 @@ export class MessagesService {
 		}
 	}
 
-	async getGroupMessages(jwt: string, groupId: string): Promise<GetGroupMessagesResponse> {
+	/*async getGroupMessages(jwt: string, groupId: string): Promise<GetGroupMessagesResponse> {
 		const response = getIdWithJwt(jwt)
 		if (!response.success) {
 			return {
@@ -155,5 +131,5 @@ export class MessagesService {
 				message: 'Server error',
 			}
 		}
-	}
+	}*/
 }

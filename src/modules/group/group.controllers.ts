@@ -26,7 +26,7 @@ export class GroupControllers {
 	}
 
 	@Delete('/leave/:groupId')
-	async leaveFromGroup(@Param('groupId') groupId: string, @Req() req: Request): Promise<LeaveFromGroupResponse> {
+	async leaveFromGroup(@Param('groupId') groupId: number, @Req() req: Request): Promise<LeaveFromGroupResponse> {
 		return await this.groupService.leaveFromGroup(req.cookies.jwt, groupId)
 	}
 }

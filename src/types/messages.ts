@@ -4,15 +4,12 @@ import { Message } from '@prisma/client'
 export type SendMessageBody = {
 	text: string
 	jwt: string
-	receiverId?: number
-	groupId?: string
+	chatId: number
 }
 
 type SendMessageErrorMessages = 'Unauthorized'
 
-type GetUserMessagesErrorMessages = 'Unauthorized'
-
-type GetGroupMessagesErrorMessages = 'Unauthorized'
+type GetUserMessagesErrorMessages = 'Unauthorized' | 'Wrong chat'
 
 export type SendMessageResponse =
 	| SuccessMessage<'Message sent successfully', { message: Message }>
@@ -21,7 +18,3 @@ export type SendMessageResponse =
 export type GetUserMessagesResponse =
 	| SuccessMessage<'Successfully got message', { messages: Message[] }>
 	| ErrorMessage<GetUserMessagesErrorMessages>
-
-export type GetGroupMessagesResponse =
-	| SuccessMessage<'Successfully got group messages', { messages: Message[] }>
-	| ErrorMessage<GetGroupMessagesErrorMessages>

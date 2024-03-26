@@ -28,19 +28,10 @@ export class MyGateway implements OnModuleInit {
 		}
 	}
 
-	@SubscribeMessage('getUserMessages')
-	async getUserMessages(@MessageBody() { jwt, userId }: { jwt: string; userId: number }) {
+	@SubscribeMessage('getChatMessages')
+	async getUserMessages(@MessageBody() { jwt, chatId }: { jwt: string; chatId: number }) {
 		const msgService = new MessagesService()
-		const response = await msgService.getUserMessages(jwt, userId)
-		if (response.success) {
-			this.server.emit('allMessages', response)
-		}
-	}
-
-	@SubscribeMessage('getGroupMessages')
-	async getGroupMessages(@MessageBody() { jwt, groupId }: { jwt: string; groupId: string }) {
-		const msgService = new MessagesService()
-		const response = await msgService.getGroupMessages(jwt, groupId)
+		const response = await msgService.getUserMessages(jwt, chatId)
 		if (response.success) {
 			this.server.emit('allMessages', response)
 		}

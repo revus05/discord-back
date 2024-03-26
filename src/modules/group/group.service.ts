@@ -1,5 +1,3 @@
-import { Group, UserGroup } from '@prisma/client'
-import { Injectable } from '@nestjs/common'
 import getUserWithJwt from '../../getUsers/getUserWithJwt'
 import prisma from '../../../prisma/client'
 import generateNoImageColor from '../../utils/generateNoImageColor'
@@ -8,10 +6,11 @@ import {
 	AddUserToGroupResponse,
 	CreateGroupResponse,
 	GetGroupsResponse,
-	GroupWithMembers,
-	GroupWithUsers,
+	GroupWithParticipants,
 	LeaveFromGroupResponse,
 } from '../../types/group'
+import { Injectable } from '@nestjs/common'
+import { Chat, Group, UserChat, UserGroup } from '@prisma/client'
 
 @Injectable()
 export class GroupService {
@@ -29,29 +28,44 @@ export class GroupService {
 			const userGroups: UserGroup[] = user.groups
 
 			// creating array for groups with members
-			let groupsWithMembers: GroupWithMembers[] = []
+			let groupsWithMembers: GroupWithParticipants[] = []
 			for (let i = 0; i < userGroups.length; i++) {
-				const groups: GroupWithUsers[] = await prisma.group.findMany({
+				const groups: any = await prisma.group.findMany({
 					where: {
 						id: userGroups[i].groupId,
 					},
 					include: {
-						users: true,
+						chat: {
+							include: {
+								messages: true,
+								userChat: true,
+							},
+						},
 					},
 				})
 
-				groups.forEach((g: Group & { users: UserGroup[] }) => {
-					const groupWithMembers: GroupWithMembers = {
-						id: g.id,
-						name: g.name,
-						image: g.image,
-						color: g.color,
-						members: g.users.length,
-						createdAt: g.createdAt,
-						updatedAt: g.updatedAt,
-					}
-					groupsWithMembers.push(groupWithMembers)
-				})
+				groups.forEach(
+					(
+						g: Group & {
+							chat: Chat & {
+								userChat: UserChat[]
+							}
+						},
+					) => {
+						const groupWithMembers: GroupWithParticipants = {
+							id: g.id,
+							name: g.name,
+							image: g.image,
+							color: g.color,
+							members: g.chat.userChat.length,
+							createdAt: g.createdAt,
+							updatedAt: g.updatedAt,
+							chatId: g.chatId,
+							chat: g.chat,
+						}
+						groupsWithMembers.push(groupWithMembers)
+					},
+				)
 			}
 
 			return {
@@ -83,9 +97,8 @@ export class GroupService {
 		}
 		const user = response.payload.user
 		const id = user.id
-		console.log(user.groups)
 		const groups: UserGroup[] = user.groups
-		let groupId: string
+		let groupId: number
 		let group: Group
 
 		// checking if the group to add to exists
@@ -142,13 +155,22 @@ export class GroupService {
 					displayName: true,
 				},
 			})
+
+			const chat: Chat = await prisma.chat.create({
+				data: {},
+			})
+
 			// creating group
 			const group: Group = await prisma.group.create({
 				data: {
-					id: crypto.randomUUID(),
 					color: generateNoImageColor(),
 					name: name + ` ${addedUser.displayName}`,
 					image: null,
+					chat: {
+						connect: {
+							id: chat.id,
+						},
+					},
 				},
 			})
 
@@ -159,6 +181,54 @@ export class GroupService {
 					groupId: group.id,
 				},
 			})
+
+			const chatLink: any = await prisma.chat.update({
+				where: {
+					id: chat.id,
+				},
+				data: {
+					userChat: {
+						create: {
+							user: {
+								connect: {
+									id: userId,
+								},
+							},
+						},
+					},
+				},
+				select: {
+					userChat: true,
+				},
+			})
+
+			const chatLink2: any = await prisma.chat.update({
+				where: {
+					id: chat.id,
+				},
+				data: {
+					userChat: {
+						create: {
+							user: {
+								connect: {
+									id,
+								},
+							},
+						},
+					},
+				},
+				select: {
+					userChat: true,
+				},
+			})
+
+			if (!chatLink || chatLink2) {
+				return {
+					success: false,
+					message: 'Unable to create chat',
+				}
+			}
+
 			return {
 				success: true,
 				message: 'Group created successfully',
@@ -176,7 +246,7 @@ export class GroupService {
 		}
 	}
 
-	async leaveFromGroup(jwt: string, groupId: string): Promise<LeaveFromGroupResponse> {
+	async leaveFromGroup(jwt: string, groupId: number): Promise<LeaveFromGroupResponse> {
 		const response = await getUserWithJwt(jwt, {
 			groups: true,
 		})
