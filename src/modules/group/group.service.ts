@@ -10,7 +10,7 @@ import {
 	LeaveFromGroupResponse,
 } from '../../types/group'
 import { Injectable } from '@nestjs/common'
-import { Chat, Group, UserChat, UserGroup } from '@prisma/client'
+import { Chat, Group, User, UserGroup } from '@prisma/client'
 
 @Injectable()
 export class GroupService {
@@ -30,25 +30,25 @@ export class GroupService {
 			// creating array for groups with members
 			let groupsWithMembers: GroupWithParticipants[] = []
 			for (let i = 0; i < userGroups.length; i++) {
-				const groups: any = await prisma.group.findMany({
+				const groups: (Group & { chat: Chat & { participants: User[] } })[] = await prisma.group.findMany({
 					where: {
 						id: userGroups[i].groupId,
 					},
 					include: {
 						chat: {
 							include: {
-								messages: true,
-								userChat: true,
+								participants: true,
 							},
 						},
 					},
 				})
 
+				// converting to proper type
 				groups.forEach(
 					(
 						g: Group & {
 							chat: Chat & {
-								userChat: UserChat[]
+								participants: User[]
 							}
 						},
 					) => {
@@ -57,11 +57,10 @@ export class GroupService {
 							name: g.name,
 							image: g.image,
 							color: g.color,
-							members: g.chat.userChat.length,
+							members: g.chat.participants.length,
+							chatId: g.chatId,
 							createdAt: g.createdAt,
 							updatedAt: g.updatedAt,
-							chatId: g.chatId,
-							chat: g.chat,
 						}
 						groupsWithMembers.push(groupWithMembers)
 					},
@@ -157,8 +156,26 @@ export class GroupService {
 			})
 
 			const chat: Chat = await prisma.chat.create({
-				data: {},
+				data: {
+					participants: {
+						connect: [
+							{
+								id,
+							},
+							{
+								id: userId,
+							},
+						],
+					},
+				},
 			})
+
+			if (!chat) {
+				return {
+					success: false,
+					message: 'Unable to create chat',
+				}
+			}
 
 			// creating group
 			const group: Group = await prisma.group.create({
@@ -181,53 +198,6 @@ export class GroupService {
 					groupId: group.id,
 				},
 			})
-
-			const chatLink: any = await prisma.chat.update({
-				where: {
-					id: chat.id,
-				},
-				data: {
-					userChat: {
-						create: {
-							user: {
-								connect: {
-									id: userId,
-								},
-							},
-						},
-					},
-				},
-				select: {
-					userChat: true,
-				},
-			})
-
-			const chatLink2: any = await prisma.chat.update({
-				where: {
-					id: chat.id,
-				},
-				data: {
-					userChat: {
-						create: {
-							user: {
-								connect: {
-									id,
-								},
-							},
-						},
-					},
-				},
-				select: {
-					userChat: true,
-				},
-			})
-
-			if (!chatLink || chatLink2) {
-				return {
-					success: false,
-					message: 'Unable to create chat',
-				}
-			}
 
 			return {
 				success: true,

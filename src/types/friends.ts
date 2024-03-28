@@ -14,7 +14,7 @@ export type SendFriendRequestRequestBody = { username: string }
 
 export type GetFriendsResponse =
 	| ErrorMessage<GetFriendsErrorMessages>
-	| SuccessMessage<'Successfully got friends', { friends: PublicUser[] }>
+	| SuccessMessage<'Successfully got friends', { friends: (PublicUser & { chatId: number })[] }>
 
 export type RemoveFriendResponse =
 	| SuccessMessage<'Successfully removed friend', { friend: UserWithoutPassword }>

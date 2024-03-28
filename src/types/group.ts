@@ -1,4 +1,4 @@
-import { Chat, Group, User, UserChat, UserGroup } from '@prisma/client'
+import { Chat, Group, UserGroup } from '@prisma/client'
 import { ErrorMessage, SuccessMessage } from './responseMessages'
 
 type AddUserToGroupErrorMessages = 'Unauthorized' | 'Error no group' | 'Error adding new user'
@@ -7,7 +7,6 @@ type GetGroupsErrorMessages = 'Unauthorized'
 
 export type GroupWithParticipants = Group & {
 	members: number
-	chat: Chat
 }
 
 export type AddUserToGroupRequestBody = { userId: number; groupId?: number }

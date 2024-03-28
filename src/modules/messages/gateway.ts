@@ -27,13 +27,4 @@ export class MyGateway implements OnModuleInit {
 			this.server.emit('sendMessageResponse', response)
 		}
 	}
-
-	@SubscribeMessage('getChatMessages')
-	async getUserMessages(@MessageBody() { jwt, chatId }: { jwt: string; chatId: number }) {
-		const msgService = new MessagesService()
-		const response = await msgService.getUserMessages(jwt, chatId)
-		if (response.success) {
-			this.server.emit('allMessages', response)
-		}
-	}
 }

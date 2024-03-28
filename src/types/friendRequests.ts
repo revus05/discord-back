@@ -35,7 +35,7 @@ export type SendFriendRequestResponse =
 
 export type AddFriendRequestResponse =
 	| ErrorMessage<AddFriendErrorMessages>
-	| SuccessMessage<'Successfully added friend', { friend: UserWithoutPassword }>
+	| SuccessMessage<'Successfully added friend', { friend: UserWithoutPassword & { chatId: number } }>
 
 export type DeleteFriendRequestResponse =
 	| SuccessMessage<'Request deleted successfully', { deletedRequest: FriendRequest }>

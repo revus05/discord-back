@@ -1,29 +1,47 @@
 import { Injectable } from '@nestjs/common'
 import prisma from '../../../prisma/client'
-import { User } from '@prisma/client'
-import getUserWithJwt, { GetUserWithJwtResponse } from '../../getUsers/getUserWithJwt'
+import { Chat, User } from '@prisma/client'
+import getUserWithJwt from '../../getUsers/getUserWithJwt'
 import getUserWithId from '../../getUsers/getUserWithId'
 import { GetFriendsResponse, PublicUser, RemoveFriendResponse } from '../../types/friends'
+import getIdWithJwt from '../../utils/getIdWithJwt'
 
 @Injectable()
 export class FriendsService {
 	async getFriends(jwt: string): Promise<GetFriendsResponse> {
+		const response = getIdWithJwt(jwt)
+		if (!response.success) {
+			return {
+				success: false,
+				message: 'Unauthorized',
+			}
+		}
+		const id = response.payload.id
 		try {
 			// getting user
-			const response: GetUserWithJwtResponse = await getUserWithJwt(jwt, { friends: true })
-			if (!response.success) {
-				return {
-					success: false,
-					message: 'Unauthorized',
-				}
-			}
-			const user = response.payload.user
+			const user: User & { friends: User[]; chat: (Chat & { participants: User[] })[] } =
+				await prisma.user.findFirst({
+					where: {
+						id,
+					},
+					include: {
+						friends: true,
+						chat: {
+							include: {
+								participants: true,
+							},
+						},
+					},
+				})
 
 			// getting user's friends and converting them to proper type
-			let friends: PublicUser[] = []
+			let friends: (PublicUser & { chatId: number })[] = []
 			user.friends.forEach((friend: User) => {
 				const { password, ...userWithoutPassword } = friend
-				friends.push({ ...userWithoutPassword })
+				const chat: Chat & { participants: User[] } = user.chat.find((chat: Chat & { participants: User[] }) =>
+					chat.participants.find((participant: User) => participant.id === friend.id),
+				)
+				friends.push({ ...userWithoutPassword, chatId: chat.id })
 			})
 			return {
 				success: true,

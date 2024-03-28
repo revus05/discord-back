@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common'
-import { FriendRequest, User } from '@prisma/client'
+import { Chat, FriendRequest, User } from '@prisma/client'
 import prisma from '../../../prisma/client'
 import getUserWithJwt from '../../getUsers/getUserWithJwt'
 import getUserShowableDataById from '../../getUsers/getUserShowableDataById'
@@ -146,6 +146,10 @@ export class FriendsRequestService {
 				}
 			}
 
+			const chat: Chat = await prisma.chat.create({
+				data: {},
+			})
+
 			// checking that user is not in friend's friend list and vice versa
 			if (!user.friends.find((friend: User) => friend.id === friendId)) {
 				const updatedUser: User = await prisma.user.update({
@@ -158,9 +162,14 @@ export class FriendsRequestService {
 								id: friendId,
 							},
 						},
+						chat: {
+							connect: {
+								id: chat.id,
+							},
+						},
 					},
 				})
-				const updatedFriend: User = await prisma.user.update({
+				const updatedFriend: User & { chat: (Chat & { participants: User[] })[] } = await prisma.user.update({
 					where: {
 						id: friendId,
 					},
@@ -170,15 +179,33 @@ export class FriendsRequestService {
 								id,
 							},
 						},
+						chat: {
+							connect: {
+								id: chat.id,
+							},
+						},
+					},
+					include: {
+						chat: {
+							include: {
+								participants: true,
+							},
+						},
 					},
 				})
 				const { password, ...updatedFriendWithoutPassword } = updatedFriend
+				const friend: UserWithoutPassword & { chatId: number } = {
+					...updatedFriendWithoutPassword,
+					chatId: updatedFriend.chat.find((chat: Chat & { participants: User[] }) =>
+						chat.participants.find((participant: User) => participant.id === id),
+					).id,
+				}
 				if (updatedUser && updatedFriend) {
 					return {
 						success: true,
 						message: 'Successfully added friend',
 						payload: {
-							friend: updatedFriendWithoutPassword,
+							friend,
 						},
 					}
 				}
