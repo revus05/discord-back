@@ -1,4 +1,4 @@
-import { Chat, Group, UserGroup } from '@prisma/client'
+import { Group, UserGroup } from '@prisma/client'
 import { ErrorMessage, SuccessMessage } from './responseMessages'
 
 type AddUserToGroupErrorMessages = 'Unauthorized' | 'Error no group' | 'Error adding new user'
