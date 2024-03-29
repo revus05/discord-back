@@ -222,7 +222,7 @@ export class GroupService {
 			const group: Group & { chat: ChatWithParticipants } = await prisma.group.create({
 				data: {
 					color: generateNoImageColor(),
-					name: name + ` ${addedUser.displayName}`,
+					name: name + `, ${addedUser.displayName}`,
 					image: null,
 					chat: {
 						connect: {
