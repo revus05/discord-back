@@ -1,5 +1,6 @@
 import { Group, UserGroup } from '@prisma/client'
 import { ErrorMessage, SuccessMessage } from './responseMessages'
+import { ChatWithParticipants } from './chats'
 
 type AddUserToGroupErrorMessages = 'Unauthorized' | 'Error no group' | 'Error adding new user'
 
@@ -21,11 +22,11 @@ export type GetGroupsResponse =
 	| ErrorMessage<GetGroupsErrorMessages>
 
 export type CreateGroupResponse =
-	| SuccessMessage<'Group created successfully', { group: Group; link: UserGroup }>
+	| SuccessMessage<'Group created successfully', { group: Group & { chat: ChatWithParticipants }; link: UserGroup }>
 	| ErrorMessage<'Unable to create chat'>
 
 export type AddUserToGroupResponse =
-	| SuccessMessage<'User successfully added', { group: Group }>
+	| SuccessMessage<'User successfully added', { group: Group & { chat: ChatWithParticipants } }>
 	| ErrorMessage<AddUserToGroupErrorMessages>
 
 export type LeaveFromGroupResponse =

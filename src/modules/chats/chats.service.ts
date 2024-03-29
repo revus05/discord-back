@@ -17,6 +17,7 @@ export class ChatsService {
 		}
 		const id = response.payload.id
 		try {
+			// getting all user's chats
 			const user: User & { chat: (Chat & { messages: Message[]; participants: User[] })[] } =
 				await prisma.user.findUnique({
 					where: {
@@ -32,18 +33,9 @@ export class ChatsService {
 					},
 				})
 
-			/*let chats: (Chat & { messages: Message[] })[] = []
-
-			user.userChat.forEach((userChat: UserChat & { chat: Chat & { messages: Message[] } }) => {
-				chats.push(userChat.chat)
-			})*/
-
-			/*user.groups.forEach((group: UserGroup & { group: Group & { chat: Chat & { messages: Message[] } } }) => {
-				chats.push(group.group.chat)
-			})*/
-
 			let chats: (Chat & { messages: Message[]; participants: UserWithoutPassword[] })[] = []
 
+			// converting chats type
 			user.chat.forEach((chat: Chat & { messages: Message[]; participants: User[] }) => {
 				let participantsWithoutPassword = []
 				chat.participants.forEach(participant => {

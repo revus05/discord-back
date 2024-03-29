@@ -27,10 +27,10 @@ model User {
   friendsRelation  User[]          @relation("UserFriends")
   sentRequests     FriendRequest[] @relation("SentRequests")
   receivedRequests FriendRequest[] @relation("ReceivedRequests")
+  chat             Chat[]
   sentMessages     Message[]       @relation("Sender")
   createdAt        DateTime        @default(dbgenerated("NOW()")) @db.Timestamptz(3)
   updatedAt        DateTime        @updatedAt @db.Timestamptz(3)
-  chat             Chat[]
 }
 
 model Group {

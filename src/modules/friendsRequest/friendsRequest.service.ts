@@ -125,7 +125,7 @@ export class FriendsRequestService {
 		user: UserWithoutPassword & UserIncludes,
 		{ friendId }: { friendId: number },
 	): Promise<AddFriendRequestResponse> {
-		// checking if the friend in request is user
+		// checking if the friend is user
 		if (id === friendId) {
 			return {
 				success: false,
@@ -146,73 +146,77 @@ export class FriendsRequestService {
 				}
 			}
 
+			// checking that user is not in friend's friend list and vice versa
+			if (user.friends.find((friend: User) => friend.id === friendId)) {
+				return {
+					success: false,
+					message: 'User already your friend',
+				}
+			}
+
+			// creating chat for this users
 			const chat: Chat = await prisma.chat.create({
 				data: {},
 			})
 
-			// checking that user is not in friend's friend list and vice versa
-			if (!user.friends.find((friend: User) => friend.id === friendId)) {
-				const updatedUser: User = await prisma.user.update({
-					where: {
-						id,
-					},
-					data: {
-						friends: {
-							connect: {
-								id: friendId,
-							},
-						},
-						chat: {
-							connect: {
-								id: chat.id,
-							},
+			// updating users
+			const updatedUser: User = await prisma.user.update({
+				where: {
+					id,
+				},
+				data: {
+					friends: {
+						connect: {
+							id: friendId,
 						},
 					},
-				})
-				const updatedFriend: User & { chat: (Chat & { participants: User[] })[] } = await prisma.user.update({
-					where: {
-						id: friendId,
-					},
-					data: {
-						friends: {
-							connect: {
-								id,
-							},
-						},
-						chat: {
-							connect: {
-								id: chat.id,
-							},
+					chat: {
+						connect: {
+							id: chat.id,
 						},
 					},
-					include: {
-						chat: {
-							include: {
-								participants: true,
-							},
+				},
+			})
+			const updatedFriend: User & { chat: (Chat & { participants: User[] })[] } = await prisma.user.update({
+				where: {
+					id: friendId,
+				},
+				data: {
+					friends: {
+						connect: {
+							id,
 						},
 					},
-				})
-				const { password, ...updatedFriendWithoutPassword } = updatedFriend
-				const friend: UserWithoutPassword & { chatId: number } = {
-					...updatedFriendWithoutPassword,
-					chatId: updatedFriend.chat.find((chat: Chat & { participants: User[] }) =>
-						chat.participants.find((participant: User) => participant.id === id),
-					).id,
-				}
-				if (updatedUser && updatedFriend) {
-					return {
-						success: true,
-						message: 'Successfully added friend',
-						payload: {
-							friend,
+					chat: {
+						connect: {
+							id: chat.id,
 						},
-					}
-				}
+					},
+				},
+				include: {
+					chat: {
+						include: {
+							participants: true,
+						},
+					},
+				},
+			})
+			const { password, ...updatedFriendWithoutPassword } = updatedFriend
+			// getting chatId
+			const friend: UserWithoutPassword & { chatId: number } = {
+				...updatedFriendWithoutPassword,
+				chatId: updatedFriend.chat.find((chat: Chat & { participants: User[] }) =>
+					chat.participants.find((participant: User) => participant.id === id),
+				).id,
 			}
-			return {
-				success: false,
-				message: 'User already your friend',
+			if (updatedUser && updatedFriend) {
+				return {
+					success: true,
+					message: 'Successfully added friend',
+					payload: {
+						friend,
+					},
+				}
 			}
 		} catch (e) {
 			console.log(e)

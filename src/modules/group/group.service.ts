@@ -11,6 +11,7 @@ import {
 } from '../../types/group'
 import { Injectable } from '@nestjs/common'
 import { Chat, Group, User, UserGroup } from '@prisma/client'
+import { ChatWithParticipants } from '../../types/chats'
 
 @Injectable()
 export class GroupService {
@@ -30,7 +31,7 @@ export class GroupService {
 			// creating array for groups with members
 			let groupsWithMembers: GroupWithParticipants[] = []
 			for (let i = 0; i < userGroups.length; i++) {
-				const groups: (Group & { chat: Chat & { participants: User[] } })[] = await prisma.group.findMany({
+				const groups: (Group & { chat: ChatWithParticipants })[] = await prisma.group.findMany({
 					where: {
 						id: userGroups[i].groupId,
 					},
@@ -98,7 +99,7 @@ export class GroupService {
 		const id = user.id
 		const groups: UserGroup[] = user.groups
 		let groupId: number
-		let group: Group
+		let group: Group & { chat: ChatWithParticipants }
 
 		// checking if the group to add to exists
 		if (data.groupId) {
@@ -112,7 +113,44 @@ export class GroupService {
 				where: {
 					id: groupId,
 				},
+				include: {
+					chat: {
+						include: {
+							participants: true,
+						},
+					},
+				},
 			})
+
+			if (group) {
+				const addFriend: User = await prisma.user.findFirst({
+					where: {
+						id: data.userId,
+					},
+				})
+				// updating group name
+				await prisma.group.update({
+					where: {
+						id: group.id,
+					},
+					data: {
+						name: `${group.name}, ${addFriend.displayName}`,
+					},
+				})
+				// adding user to chat
+				await prisma.chat.update({
+					where: {
+						id: group.chatId,
+					},
+					data: {
+						participants: {
+							connect: {
+								id: data.userId,
+							},
+						},
+					},
+				})
+			}
 		}
 
 		// if group to add doesn't exist, creating it
@@ -122,6 +160,7 @@ export class GroupService {
 				group = response.payload.group
 			}
 		}
+
 		// creating link to connect user and group
 		const newUserInGroup: UserGroup = await prisma.userGroup.create({
 			data: {
@@ -146,6 +185,7 @@ export class GroupService {
 
 	async createGroup(id: number, userId: number, name: string): Promise<CreateGroupResponse> {
 		try {
+			// getting user that we want to add
 			const addedUser = await prisma.user.findFirst({
 				where: {
 					id: userId,
@@ -155,6 +195,7 @@ export class GroupService {
 				},
 			})
 
+			// creating chat and connecting addedUser to it
 			const chat: Chat = await prisma.chat.create({
 				data: {
 					participants: {
@@ -178,7 +219,7 @@ export class GroupService {
 			}
 
 			// creating group
-			const group: Group = await prisma.group.create({
+			const group: Group & { chat: ChatWithParticipants } = await prisma.group.create({
 				data: {
 					color: generateNoImageColor(),
 					name: name + ` ${addedUser.displayName}`,
@@ -186,6 +227,13 @@ export class GroupService {
 					chat: {
 						connect: {
 							id: chat.id,
+						},
+					},
+				},
+				include: {
+					chat: {
+						include: {
+							participants: true,
 						},
 					},
 				},
