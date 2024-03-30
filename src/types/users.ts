@@ -48,3 +48,7 @@ export type UploadUserImageResponse =
 export type UpdatePhoneNumberResponse =
 	| SuccessMessage<'Successfully updated phone number', { user: UserWithoutPassword }>
 	| ErrorMessage<UpdatePhoneNumberErrorMessages>
+
+export type GetUserWithIdResponse =
+	| SuccessMessage<'Successfully got user', { user: UserShowableData }>
+	| ErrorMessage<'Error getting user'>

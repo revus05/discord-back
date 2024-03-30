@@ -1,8 +1,9 @@
 import { ErrorMessage, SuccessMessage } from './responseMessages'
-import { Chat, Message, User } from '@prisma/client'
+import { Chat, Message } from '@prisma/client'
+import { UserShowableData } from './users'
 
-export type getChatsResponse =
-	| SuccessMessage<'Successfully got chats', { chats: (Chat & { messages: Message[] })[] }>
+export type GetChatsResponse =
+	| SuccessMessage<'Successfully got chats', { chats: (ChatWithParticipants & { messages: Message[] })[] }>
 	| ErrorMessage<'Unauthorized'>
 
-export type ChatWithParticipants = Chat & { participants: User[] }
+export type ChatWithParticipants = Chat & { participants: UserShowableData[] }

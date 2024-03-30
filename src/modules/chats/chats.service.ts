@@ -1,13 +1,13 @@
 import { Injectable } from '@nestjs/common'
 import getIdWithJwt from '../../utils/getIdWithJwt'
 import prisma from '../../../prisma/client'
-import { getChatsResponse } from '../../types/chats'
+import { GetChatsResponse } from '../../types/chats'
 import { Chat, Message, User } from '@prisma/client'
-import { UserWithoutPassword } from '../../types/users'
+import { UserShowableData, UserWithoutPassword } from '../../types/users'
 
 @Injectable()
 export class ChatsService {
-	async getChats(jwt: string): Promise<getChatsResponse> {
+	async getChats(jwt: string): Promise<GetChatsResponse> {
 		const response = getIdWithJwt(jwt)
 		if (!response.success) {
 			return {
@@ -33,16 +33,17 @@ export class ChatsService {
 					},
 				})
 
-			let chats: (Chat & { messages: Message[]; participants: UserWithoutPassword[] })[] = []
+			let chats: (Chat & { messages: Message[]; participants: UserShowableData[] })[] = []
 
 			// converting chats type
 			user.chat.forEach((chat: Chat & { messages: Message[]; participants: User[] }) => {
-				let participantsWithoutPassword = []
+				let participantsShowableData = []
 				chat.participants.forEach(participant => {
-					const { password, ...participantWithoutPassword } = participant
-					participantsWithoutPassword.push(participantWithoutPassword)
+					const { password, email, phoneCode, phoneNumber, updatedAt, ...participantShowableData } =
+						participant
+					participantsShowableData.push(participantShowableData)
 				})
-				chats.push({ ...chat, participants: participantsWithoutPassword })
+				chats.push({ ...chat, participants: participantsShowableData })
 			})
 
 			return {

@@ -7,6 +7,7 @@ import getIdWithJwt from '../../utils/getIdWithJwt'
 import * as fs from 'fs'
 import * as path from 'path'
 import {
+	GetUserWithIdResponse,
 	UpdateDisplayNameRequestData,
 	UpdatePhoneNumberRequestData,
 	UpdatePhoneNumberResponse,
@@ -229,6 +230,38 @@ export class UserService {
 				message: 'Successfully updated phone number',
 				payload: {
 					user: userWithoutPassword,
+				},
+			}
+		} catch (e) {
+			console.error(e)
+			return {
+				success: false,
+				message: 'Server error',
+			}
+		}
+	}
+
+	async getUserWithId(id: number): Promise<GetUserWithIdResponse> {
+		try {
+			const user: User = await prisma.user.findFirst({
+				where: {
+					id,
+				},
+			})
+			if (!user) {
+				return {
+					success: false,
+					message: 'Error getting user',
+				}
+			}
+
+			const { password, email, updatedAt, phoneNumber, phoneCode, ...userShowableData } = user
+			console.log('got user')
+			return {
+				success: true,
+				message: 'Successfully got user',
+				payload: {
+					user: userShowableData,
 				},
 			}
 		} catch (e) {

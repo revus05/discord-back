@@ -3,9 +3,10 @@ import prisma from '../../../prisma/client'
 import { User } from '@prisma/client'
 import getUserWithJwt from '../../getUsers/getUserWithJwt'
 import getUserWithId from '../../getUsers/getUserWithId'
-import { GetFriendsResponse, PublicUser, RemoveFriendResponse } from '../../types/friends'
+import { GetFriendsResponse, RemoveFriendResponse } from '../../types/friends'
 import getIdWithJwt from '../../utils/getIdWithJwt'
 import { ChatWithParticipants } from '../../types/chats'
+import { UserShowableData } from '../../types/users'
 
 @Injectable()
 export class FriendsService {
@@ -35,10 +36,10 @@ export class FriendsService {
 			})
 
 			// getting user's friends and converting them to proper type
-			let friends: (PublicUser & { chatId: number })[] = []
+			let friends: (UserShowableData & { chatId: number })[] = []
 			// getting chatId
 			user.friends.forEach((friend: User) => {
-				const { password, ...userWithoutPassword } = friend
+				const { password, email, phoneNumber, phoneCode, updatedAt, ...userWithoutPassword } = friend
 				const chat: ChatWithParticipants = user.chat.find((chat: ChatWithParticipants) =>
 					chat.participants.find((participant: User) => participant.id === friend.id),
 				)

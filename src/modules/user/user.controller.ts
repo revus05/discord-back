@@ -1,9 +1,10 @@
-import { Body, Controller, Post, Req, UploadedFile, UseInterceptors } from '@nestjs/common'
+import { Body, Controller, Get, Param, Post, Req, UploadedFile, UseInterceptors } from '@nestjs/common'
 
 import { Request } from 'express'
 import { FileInterceptor } from '@nestjs/platform-express'
 import { UserService } from './user.service'
 import {
+	GetUserWithIdResponse,
 	UpdateDisplayNameRequestData,
 	UpdatePhoneNumberRequestData,
 	UpdatePhoneNumberResponse,
@@ -45,5 +46,10 @@ export class userController {
 		@Body() requestBody: UpdatePhoneNumberRequestData,
 	): Promise<UpdatePhoneNumberResponse> {
 		return await this.userService.updatePhoneNumber(req.cookies.jwt, requestBody)
+	}
+
+	@Get('/getWithId/:id')
+	async getUserWithId(@Param('id') id: string): Promise<GetUserWithIdResponse> {
+		return await this.userService.getUserWithId(+id)
 	}
 }
