@@ -3,7 +3,7 @@ import getIdWithJwt from '../../utils/getIdWithJwt'
 import prisma from '../../../prisma/client'
 import { GetChatsResponse } from '../../types/chats'
 import { Chat, Message, User } from '@prisma/client'
-import { UserShowableData, UserWithoutPassword } from '../../types/users'
+import { UserShowableData } from '../../types/users'
 
 @Injectable()
 export class ChatsService {

@@ -1,4 +1,3 @@
-import { User } from '@prisma/client'
 import { UserShowableData } from './users'
 import { ErrorMessage, SuccessMessage } from './responseMessages'
 
