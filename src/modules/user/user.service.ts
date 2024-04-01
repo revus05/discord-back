@@ -16,6 +16,7 @@ import {
 	UpdateUserResponse,
 	UploadUserImageResponse,
 } from '../../types/users'
+import * as crypto from 'crypto'
 
 @Injectable()
 export class UserService {
@@ -153,7 +154,9 @@ export class UserService {
 			if (!fs.existsSync(targetPath)) {
 				fs.mkdirSync(targetPath, { recursive: true })
 			}
-			fs.rename(file.path, path.join(targetPath, file.originalname), err => {
+			const extension = file.originalname.substring(file.originalname.lastIndexOf('.') + 1)
+			const newName = `${crypto.randomUUID()}.${extension}`
+			fs.rename(file.path, path.join(targetPath, newName), err => {
 				if (err) {
 					return {
 						success: false,
@@ -168,7 +171,7 @@ export class UserService {
 					id,
 				},
 				data: {
-					userImage: `http://localhost:5555/${file.originalname}`,
+					userImage: `http://localhost:5555/${newName}`,
 				},
 			})
 
@@ -256,7 +259,6 @@ export class UserService {
 			}
 
 			const { password, email, updatedAt, phoneNumber, phoneCode, ...userShowableData } = user
-			console.log('got user')
 			return {
 				success: true,
 				message: 'Successfully got user',

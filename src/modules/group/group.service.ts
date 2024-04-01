@@ -60,6 +60,7 @@ export class GroupService {
 							color: g.color,
 							members: g.chat.participants.length,
 							chatId: g.chatId,
+							ownerId: g.ownerId,
 							createdAt: g.createdAt,
 							updatedAt: g.updatedAt,
 						}
@@ -229,6 +230,7 @@ export class GroupService {
 							id: chat.id,
 						},
 					},
+					ownerId: id,
 				},
 				include: {
 					chat: {

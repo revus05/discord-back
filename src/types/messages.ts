@@ -9,12 +9,6 @@ export type SendMessageBody = {
 
 type SendMessageErrorMessages = 'Unauthorized'
 
-type GetUserMessagesErrorMessages = 'Unauthorized' | 'Wrong chat'
-
 export type SendMessageResponse =
 	| SuccessMessage<'Message sent successfully', { message: Message }>
 	| ErrorMessage<SendMessageErrorMessages>
-
-export type GetUserMessagesResponse =
-	| SuccessMessage<'Successfully got message', { messages: Message[] }>
-	| ErrorMessage<GetUserMessagesErrorMessages>

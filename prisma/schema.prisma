@@ -41,6 +41,7 @@ model Group {
   color     NoImageColors
   chat      Chat          @relation(fields: [chatId], references: [id])
   chatId    Int
+  ownerId   Int
   createdAt DateTime      @default(dbgenerated("NOW()")) @db.Timestamptz(3)
   updatedAt DateTime      @updatedAt @db.Timestamptz(3)
 }
